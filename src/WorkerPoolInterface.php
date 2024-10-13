@@ -25,7 +25,11 @@ interface WorkerPoolInterface extends WorkerEventEmitterAwareInterface, WorkersS
     public function findGroup(int|string $groupIdOrName): WorkerGroupInterface|null;
 
     public function validateGroupsScheme(): void;
+    
+    public function getPoolsContext(): array;
 
+    public function setPoolContext(array $context): static;
+    
     /**
      * Run the worker pool.
      * This method will block the current fiber and release it after the pool is stopped.

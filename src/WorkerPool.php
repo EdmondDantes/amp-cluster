@@ -73,6 +73,8 @@ final class WorkerPool implements WorkerPoolInterface
      * @var WorkerDescriptor[]
      */
     protected array $workers        = [];
+    
+    protected array $poolContext    = [];
 
     protected readonly Queue $queue;
     private readonly ConcurrentIterator $iterator;
@@ -277,7 +279,20 @@ final class WorkerPool implements WorkerPoolInterface
 
         }
     }
-
+    
+    #[\Override]
+    public function getPoolsContext(): array
+    {
+        return $this->poolContext;
+    }
+    
+    #[\Override]
+    public function setPoolContext(array $context): static
+    {
+        $this->poolContext          = $context;
+        return $this;
+    }
+    
     public function run(): void
     {
         if ($this->running) {
@@ -656,7 +671,7 @@ final class WorkerPool implements WorkerPoolInterface
 
             $workerDescriptor->setWorkerProcess($workerProcess);
 
-            $runnerStrategy->initiateWorkerContext($context, $workerDescriptor->id, $workerDescriptor->group);
+            $runnerStrategy->initiateWorkerContext($context, $workerDescriptor->id, $workerDescriptor->group, $this->poolContext);
 
             $this->eventEmitter->emitWorkerEvent(
                 new WorkerProcessStarted($workerDescriptor->id, $workerDescriptor->group, $context),

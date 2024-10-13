@@ -33,7 +33,8 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
         }
 
         try {
-            ['id' => $id, 'group' => $group, 'groupsScheme' => $groupsScheme, 'workersStorage' => $workersStorage] = self::readWorkerMetadata($channel);
+            ['id' => $id, 'group' => $group, 'groupsScheme' => $groupsScheme, 'workersStorage' => $workersStorage, 'context' => $context]
+                = self::readWorkerMetadata($channel);
 
         } catch (\Throwable $exception) {
             throw new FatalWorkerException('Could not connect to IPC socket', 0, $exception);
@@ -57,7 +58,7 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
                 throw new FatalWorkerException('Entry point class must implement WorkerEntryPointI');
             }
 
-            $worker                 = new Worker((int) $id, $channel, $group, $groupsScheme, $workersStorage);
+            $worker                 = new Worker((int) $id, $channel, $group, $groupsScheme, $workersStorage, null, $context);
 
             $entryPoint->initialize($worker);
             $worker->applyGlobalErrorHandler();
@@ -101,7 +102,7 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
      * @throws SerializationException
      * @throws ChannelException
      */
-    public function initiateWorkerContext(Context $processContext, int $workerId, WorkerGroupInterface $group): void
+    public function initiateWorkerContext(Context $processContext, int $workerId, WorkerGroupInterface $group, array $context = []): void
     {
         $workerPool                 = $this->getWorkerPool();
 
@@ -113,7 +114,8 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
             'id'                    => $workerId,
             'group'                 => $group,
             'groupsScheme'          => $workerPool->getGroupsScheme(),
-            'workersStorage'        => $workerPool->getWorkersStorage()::class
+            'workersStorage'        => $workerPool->getWorkersStorage()::class,
+            'context'               => $context
         ]);
     }
 
@@ -140,6 +142,10 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
 
         if(!\is_array($data['groupsScheme'])) {
             throw new \Error('Invalid groups scheme. Expected array');
+        }
+        
+        if(false === array_key_exists('context', $data)) {
+            $data['context']        = [];
         }
 
         return $data;

@@ -54,6 +54,8 @@ class Worker implements WorkerInterface
 
     /** @var ConcurrentIterator<TReceive> */
     protected readonly ConcurrentIterator $iterator;
+    
+    protected readonly array $context;
 
     private LoggerInterface $logger;
     private WorkersStorageInterface $workersStorage;
@@ -81,6 +83,7 @@ class Worker implements WorkerInterface
         private readonly array $groupsScheme,
         string $workersStorageClass,
         ?LoggerInterface        $logger = null,
+        array $context          = []
     ) {
         $this->queue                = new Queue();
         $this->iterator             = $this->queue->iterate();
@@ -88,6 +91,7 @@ class Worker implements WorkerInterface
         $this->workerFuture         = new DeferredFuture;
 
         $this->eventEmitter         = new WorkerEventEmitter;
+        $this->context              = $context;
 
         if(\class_exists($workersStorageClass) === false) {
             throw new \RuntimeException('Invalid storage class provided. Expected ' . WorkersStorageInterface::class . ' implementation');
@@ -173,7 +177,13 @@ class Worker implements WorkerInterface
     {
         return $this->group->getWorkerType();
     }
-
+    
+    #[\Override]
+    public function getWorkerContext(): array
+    {
+        return $this->context;
+    }
+    
     public function getWorkerEventEmitter(): WorkerEventEmitterInterface
     {
         return $this->eventEmitter;

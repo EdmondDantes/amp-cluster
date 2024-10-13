@@ -16,5 +16,5 @@ interface RunnerStrategyInterface
      *
      *
      **/
-    public function initiateWorkerContext(Context $processContext, int $workerId, WorkerGroupInterface $group): void;
+    public function initiateWorkerContext(Context $processContext, int $workerId, WorkerGroupInterface $group, array $context = []): void;
 }
