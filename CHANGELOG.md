@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1] - 2024-10-13 [Release]
+
+### Added
+
+- Added `WorkerPoolInterface::setPoolContext()` + `WorkerInterface::getPoolContext()` methods. 
+Each `Worker` can receive a shared application context during startup, 
+which is set using the `setPoolContext()` method before calling the `WorkerPoolInterface::start()` method.
+
+
 ## [1.0.0] - 2024-07-13 [Release]
 
 ### Fixed

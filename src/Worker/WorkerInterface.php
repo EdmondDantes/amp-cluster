@@ -30,7 +30,13 @@ interface WorkerInterface extends WorkerEventEmitterAwareInterface, WorkersStora
     public function getWorkerGroup(): WorkerGroup;
     public function getWorkerGroupId(): int;
     public function getWorkerType(): WorkerTypeEnum;
-    public function getWorkerContext(): array;
+    
+    /**
+     * Returns the context of the worker pool.
+     *
+     * @return array
+     */
+    public function getPoolContext(): array;
 
     public function getAbortCancellation(): Cancellation;
 
