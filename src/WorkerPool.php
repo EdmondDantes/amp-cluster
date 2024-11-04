@@ -57,9 +57,6 @@ use function Amp\trapSignal;
  *
  * A worker pool allows you to create groups of processes belonging to different types of workers,
  * and then use them to perform tasks.
- *
- * @template-covariant TReceive
- * @template TSend
  */
 final class WorkerPool implements WorkerPoolInterface
 {
