@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2] - 2024-11-19 [Release]
+
+### Changed
+
+- Now, `WorkerLogHandler` adds additional metadata about the Worker to the log: `workerId`, `workerPid`, 
+worker type information, and additional `WorkerGroup` details. 
+
 ## [1.0.1] - 2024-10-13 [Release]
 
 ### Added
