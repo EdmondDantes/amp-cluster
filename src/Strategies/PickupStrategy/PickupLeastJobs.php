@@ -26,15 +26,15 @@ final class PickupLeastJobs extends PickupStrategyAbstract
 
         foreach ($this->iterate($possibleGroups, $possibleWorkers, $ignoredWorkers) as $workerState) {
 
-            if($workerState->isReady() === false) {
+            if ($workerState->isReady() === false) {
                 continue;
             }
 
-            if($workerState->getJobProcessing() === 0) {
+            if ($workerState->getJobProcessing() === 0) {
                 return $workerState->getWorkerId();
             }
 
-            if($workerState->getJobProcessing() < $bestJobCount) {
+            if ($workerState->getJobProcessing() < $bestJobCount) {
                 $bestJobCount       = $workerState->getJobProcessing();
                 $foundWorkerId      = $workerState->getWorkerId();
             }

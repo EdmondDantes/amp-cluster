@@ -54,11 +54,10 @@ class Worker implements WorkerInterface
 
     /** @var ConcurrentIterator<TReceive> */
     protected readonly ConcurrentIterator $iterator;
-    
+
     /**
      * Shared context between all workers.
      *
-     * @var array $poolContext
      */
     protected readonly array $poolContext;
 
@@ -98,17 +97,17 @@ class Worker implements WorkerInterface
         $this->eventEmitter         = new WorkerEventEmitter;
         $this->poolContext          = $poolContext;
 
-        if(\class_exists($workersStorageClass) === false) {
+        if (\class_exists($workersStorageClass) === false) {
             throw new \RuntimeException('Invalid storage class provided. Expected ' . WorkersStorageInterface::class . ' implementation');
         }
 
         $this->workersStorage       = \forward_static_call([$workersStorageClass, 'instanciate'], $this->getTotalWorkersCount(), $this->id);
 
-        if($logger !== null) {
+        if ($logger !== null) {
             $this->logger           = $logger;
         } else {
             $this->logger           = new \Monolog\Logger('worker-'.$id);
-            $this->logger->pushHandler(new WorkerLogHandler($this->ipcChannel));
+            $this->logger->pushHandler(new WorkerLogHandler($this->ipcChannel, $this->id, $this->group));
         }
     }
 
@@ -182,13 +181,13 @@ class Worker implements WorkerInterface
     {
         return $this->group->getWorkerType();
     }
-    
+
     #[\Override]
     public function getPoolContext(): array
     {
         return $this->poolContext;
     }
-    
+
     public function getWorkerEventEmitter(): WorkerEventEmitterInterface
     {
         return $this->eventEmitter;
@@ -218,23 +217,23 @@ class Worker implements WorkerInterface
 
             while ($message = $this->ipcChannel->receive($abortCancellation)) {
 
-                if($message instanceof MessagePingPong) {
+                if ($message instanceof MessagePingPong) {
                     $this->ipcChannel->send(new MessagePingPong);
                     continue;
                 }
 
-                if($message instanceof MessageIpcShutdown) {
+                if ($message instanceof MessageIpcShutdown) {
                     $this->ipcChannelShutdown = true;
                 }
 
-                if($message instanceof MessageIpcShutdown || $message instanceof WorkerShouldBeShutdown) {
+                if ($message instanceof MessageIpcShutdown || $message instanceof WorkerShouldBeShutdown) {
                     break;
                 }
 
-                if($message instanceof WorkerSoftShutdown) {
+                if ($message instanceof WorkerSoftShutdown) {
 
                     // handle the soft shutdown handler if defined
-                    if($this->softShutdownHandler !== null) {
+                    if ($this->softShutdownHandler !== null) {
                         \call_user_func($this->softShutdownHandler);
                     } else {
                         // else terminate the worker
@@ -247,7 +246,7 @@ class Worker implements WorkerInterface
         } catch (\Throwable $exception) {
 
             // Extract the original exception
-            if($exception instanceof CancelledException && $exception->getPrevious() !== null) {
+            if ($exception instanceof CancelledException && $exception->getPrevious() !== null) {
                 $exception          = $exception->getPrevious();
             }
 
@@ -257,12 +256,12 @@ class Worker implements WorkerInterface
                 $this->logger->error('Failed to update worker state: '.$stateException->getMessage());
             }
 
-            if(false === $exception instanceof CancelledException) {
+            if (false === $exception instanceof CancelledException) {
                 $this->sendException($exception);
             }
 
             // IPC Channel manually closed
-            if(false === $this->workerFuture->isComplete()) {
+            if (false === $this->workerFuture->isComplete()) {
                 //
                 // We always use the complete() method instead of error()
                 // because this Future should not throw any exceptions!
@@ -278,14 +277,14 @@ class Worker implements WorkerInterface
     {
         $this->workerState->markUsShutdown();
 
-        if($this->ipcChannel->isClosed()) {
+        if ($this->ipcChannel->isClosed()) {
             return;
         }
 
         // Send a message to the watcher to confirm that the worker has been shutdown
         $this->ipcChannel->send(null);
 
-        if($this->ipcChannelShutdown) {
+        if ($this->ipcChannelShutdown) {
             return;
         }
 
@@ -307,22 +306,22 @@ class Worker implements WorkerInterface
 
     public function initiateTermination(?\Throwable $throwable = null): void
     {
-        if(false === $this->mainCancellation->isCancelled()) {
+        if (false === $this->mainCancellation->isCancelled()) {
             $this->mainCancellation->cancel($throwable);
         }
     }
 
     public function stop(?\Throwable $throwable = null): void
     {
-        if($this->isStopped) {
+        if ($this->isStopped) {
             return;
         }
 
         $this->isStopped            = true;
 
-        if($throwable !== null) {
+        if ($throwable !== null) {
 
-            if(false === $throwable instanceof RemoteException) {
+            if (false === $throwable instanceof RemoteException) {
 
                 $pid                = \getmypid();
 
@@ -345,7 +344,7 @@ class Worker implements WorkerInterface
             // Ignore
         }
 
-        if(false === $this->mainCancellation->isCancelled()) {
+        if (false === $this->mainCancellation->isCancelled()) {
             $this->mainCancellation->cancel($throwable);
         }
 
@@ -368,16 +367,16 @@ class Worker implements WorkerInterface
                 // Ignore
             }
 
-            if(false === $this->workerFuture->isComplete()) {
+            if (false === $this->workerFuture->isComplete()) {
                 $this->workerFuture->complete();
             }
 
-            if(false === $this->queue->isComplete()) {
+            if (false === $this->queue->isComplete()) {
                 $this->queue->complete();
             }
         }
 
-        if($throwable !== null) {
+        if ($throwable !== null) {
             throw $throwable;
         }
     }
@@ -401,7 +400,7 @@ class Worker implements WorkerInterface
     {
         foreach ($this->groupsScheme as $group) {
             foreach ($group->getWorkerStrategies() as $strategy) {
-                if($strategy instanceof WorkerStrategyInterface) {
+                if ($strategy instanceof WorkerStrategyInterface) {
                     $strategy->setWorker($this, $group === $this->group)->setWorkerGroup($group);
                 }
             }
@@ -420,7 +419,7 @@ class Worker implements WorkerInterface
             } catch (\Throwable $exception) {
                 $self               = $self->get();
 
-                if(false === $exception instanceof RemoteException) {
+                if (false === $exception instanceof RemoteException) {
                     $exception      = new FatalWorkerException(
                         'Periodic task encountered an error: '.$exception->getMessage(),
                         0,
@@ -441,7 +440,7 @@ class Worker implements WorkerInterface
 
     public function cancelPeriodicTask(int $taskId): void
     {
-        if(isset($this->periodicTasks[$taskId])) {
+        if (isset($this->periodicTasks[$taskId])) {
             $task = $this->periodicTasks[$taskId];
             unset($this->periodicTasks[$taskId]);
             $task->cancel();
@@ -450,7 +449,7 @@ class Worker implements WorkerInterface
 
     public function defineSoftShutdownHandler(callable $handler): void
     {
-        if($this->softShutdownHandler !== null) {
+        if ($this->softShutdownHandler !== null) {
             throw new \RuntimeException('Soft shutdown handler already defined');
         }
 
@@ -465,7 +464,7 @@ class Worker implements WorkerInterface
 
             $self                   = $self->get();
 
-            if($self instanceof self) {
+            if ($self instanceof self) {
                 $self->initiateTermination($exception);
             }
         });
@@ -473,11 +472,11 @@ class Worker implements WorkerInterface
 
     protected function sendException(\Throwable $exception): void
     {
-        if($this->ipcChannel->isClosed()) {
+        if ($this->ipcChannel->isClosed()) {
             return;
         }
 
-        if(false === $exception instanceof RemoteException) {
+        if (false === $exception instanceof RemoteException) {
             $pid                    = \getmypid();
             $exception              = new RemoteException(
                 "Uncaught worker (id: {$this->id}, pid: $pid) exception: "

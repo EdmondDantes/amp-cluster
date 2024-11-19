@@ -60,7 +60,7 @@ final class IpcClient implements IpcClientInterface
         private readonly int                  $retryInterval = 1,
         private readonly int                  $scalingTimeout = 2
     ) {
-        if($this->workerGroup->getPickupStrategy() === null) {
+        if ($this->workerGroup->getPickupStrategy() === null) {
             throw new \InvalidArgumentException('WorkerGroup must have a PickupStrategy');
         }
 
@@ -79,7 +79,7 @@ final class IpcClient implements IpcClientInterface
     {
         $deferred                   = null;
 
-        if($awaitResult) {
+        if ($awaitResult) {
             $deferred               = new DeferredFuture();
         }
 
@@ -93,7 +93,7 @@ final class IpcClient implements IpcClientInterface
             try {
                 $this->sendJobImmediately($data, $allowedGroups, $allowedWorkers, $deferred ?? false, $priority, $weight);
             } catch (\Throwable $exception) {
-                if($deferred instanceof DeferredFuture && false === $deferred->isComplete()) {
+                if ($deferred instanceof DeferredFuture && false === $deferred->isComplete()) {
                     $deferred->complete($exception);
                 }
             }
@@ -119,22 +119,22 @@ final class IpcClient implements IpcClientInterface
         $tryCount                   = 0;
         $ignoreWorkers              = [];
 
-        if($awaitResult instanceof DeferredFuture) {
+        if ($awaitResult instanceof DeferredFuture) {
             $deferred               = $awaitResult;
         } else {
             $deferred               = $awaitResult ? new DeferredFuture() : null;
         }
 
-        if($allowedGroups === []) {
+        if ($allowedGroups === []) {
             $allowedGroups          = $this->workerGroup->getJobGroups();
         }
 
         // Add self-worker to ignore-list
-        if(false === \in_array($this->workerId, $ignoreWorkers, true)) {
+        if (false === \in_array($this->workerId, $ignoreWorkers, true)) {
             $ignoreWorkers[]        = $this->workerId;
         }
 
-        while($tryCount < $this->maxTryCount) {
+        while ($tryCount < $this->maxTryCount) {
 
             $tryCount++;
             $isScalingPossible      = false;
@@ -142,14 +142,14 @@ final class IpcClient implements IpcClientInterface
 
             try {
 
-                if($foundedWorkerId === null) {
+                if ($foundedWorkerId === null) {
                     $isScalingPossible  = $this->requestScaling($allowedGroups);
                     throw new NoWorkersAvailable($allowedGroups);
                 }
 
                 $socketId           = $this->tryToSendJob($foundedWorkerId, $data, $priority, $weight, $deferred);
 
-                if($deferred !== null) {
+                if ($deferred !== null) {
                     $this->resultsFutures[\spl_object_id($deferred)] = [$deferred, $socketId, \time()];
                     return $deferred->getFuture();
                 }
@@ -157,15 +157,15 @@ final class IpcClient implements IpcClientInterface
 
             } catch (NoWorkersAvailable $exception) {
 
-                if($tryCount >= $this->maxTryCount) {
+                if ($tryCount >= $this->maxTryCount) {
                     $deferred?->complete($exception);
                     throw $exception;
                 }
 
-                if($isScalingPossible && $this->scalingTimeout > 0) {
+                if ($isScalingPossible && $this->scalingTimeout > 0) {
                     // suspend the current task for a while
                     delay($this->scalingTimeout, true, $this->cancellation);
-                } elseif($this->retryInterval > 0) {
+                } elseif ($this->retryInterval > 0) {
                     // suspend the current task for a while
                     delay((float) $this->retryInterval, true, $this->cancellation);
                 } else {
@@ -178,7 +178,7 @@ final class IpcClient implements IpcClientInterface
             }
         }
 
-        if($deferred !== null) {
+        if ($deferred !== null) {
             $deferred->complete(new SendJobException($allowedGroups, $this->maxTryCount));
             return $deferred->getFuture();
         }
@@ -220,7 +220,7 @@ final class IpcClient implements IpcClientInterface
         $channels                   = $this->workerChannels;
         $this->workerChannels       = [];
 
-        foreach($channels as $channel) {
+        foreach ($channels as $channel) {
             try {
                 // Close connection gracefully
                 $channel->send(IpcServer::CLOSE_HAND_SHAKE);
@@ -238,12 +238,12 @@ final class IpcClient implements IpcClientInterface
         int   $weight               = 0,
         int   $tryCount             = 0
     ): int|null {
-        if($allowedGroups === []) {
+        if ($allowedGroups === []) {
             $allowedGroups          = $this->workerGroup->getJobGroups();
         }
 
         // Add self-worker to ignore a list
-        if(false === \in_array($this->workerId, $ignoreWorkers, true)) {
+        if (false === \in_array($this->workerId, $ignoreWorkers, true)) {
             $ignoreWorkers[]        = $this->workerId;
         }
 
@@ -265,11 +265,11 @@ final class IpcClient implements IpcClientInterface
 
         foreach ($allowedGroups as $groupId) {
 
-            if(\array_key_exists($groupId, $groupsScheme) === false) {
+            if (\array_key_exists($groupId, $groupsScheme) === false) {
                 continue;
             }
 
-            if($groupsScheme[$groupId]->getScalingStrategy()?->requestScaling($workerId) === true) {
+            if ($groupsScheme[$groupId]->getScalingStrategy()?->requestScaling($workerId) === true) {
                 $isPossible         = true;
             }
         }
@@ -279,7 +279,7 @@ final class IpcClient implements IpcClientInterface
 
     private function getWorkerChannel(int $workerId): StreamChannel
     {
-        if(\array_key_exists($workerId, $this->workerChannels)) {
+        if (\array_key_exists($workerId, $this->workerChannels)) {
             return $this->workerChannels[$workerId];
         }
 
@@ -308,7 +308,7 @@ final class IpcClient implements IpcClientInterface
     {
         $channel                    = $this->workerChannels[$workerId] ?? null;
 
-        if($channel === null) {
+        if ($channel === null) {
             return;
         }
 
@@ -317,7 +317,7 @@ final class IpcClient implements IpcClientInterface
 
                 $response           = $this->jobSerializer->parseResponse($data);
 
-                if(\array_key_exists($response->getJobId(), $this->resultsFutures)) {
+                if (\array_key_exists($response->getJobId(), $this->resultsFutures)) {
                     [$deferred, ] = $this->resultsFutures[$response->getJobId()];
                     unset($this->resultsFutures[$response->getJobId()]);
                     $deferred->complete($response->getData());
@@ -334,7 +334,7 @@ final class IpcClient implements IpcClientInterface
             }
 
             // Ignore the exception if it is not a ChannelException
-            if(false === $exception instanceof ChannelException
+            if (false === $exception instanceof ChannelException
                && false === $exception instanceof TimeoutException
                && false === $exception instanceof CancelledException) {
                 throw $exception;
@@ -346,8 +346,8 @@ final class IpcClient implements IpcClientInterface
     {
         $currentTime                = \time();
 
-        foreach($this->resultsFutures as $id => [$deferred, $socketId, $time]) {
-            if($currentTime - $time > $this->futureTimeout) {
+        foreach ($this->resultsFutures as $id => [$deferred, $socketId, $time]) {
+            if ($currentTime - $time > $this->futureTimeout) {
                 unset($this->resultsFutures[$id]);
                 $deferred->error(new TimeoutException('Future timeout: ' . $this->futureTimeout));
             }

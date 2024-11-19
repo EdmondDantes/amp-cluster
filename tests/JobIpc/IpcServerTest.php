@@ -65,7 +65,7 @@ class IpcServerTest extends TestCase
         while ($iterator->continue($abortCancellation)) {
             [$channel, $data]       = $iterator->getValue();
 
-            if(\is_callable($this->jobHandler)) {
+            if (\is_callable($this->jobHandler)) {
                 \call_user_func($this->jobHandler, $channel, $data);
             }
         }

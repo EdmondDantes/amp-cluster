@@ -57,7 +57,7 @@ final class SocketProvider
                 $deferredCancellation = $self->get()?->deferredCancellation;
 
                 // Stop the service
-                if($deferredCancellation instanceof DeferredCancellation && false === $deferredCancellation->isCancelled()) {
+                if ($deferredCancellation instanceof DeferredCancellation && false === $deferredCancellation->isCancelled()) {
                     $deferredCancellation->cancel($exception);
                 }
 
@@ -69,7 +69,7 @@ final class SocketProvider
 
     public function stop(): void
     {
-        if(false === $this->deferredCancellation->isCancelled()) {
+        if (false === $this->deferredCancellation->isCancelled()) {
             $this->deferredCancellation->cancel();
         }
 

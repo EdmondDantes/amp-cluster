@@ -69,7 +69,7 @@ final class IpcServer implements IpcServerInterface
         }
 
         // Try to remove existing file
-        if($this->toUnlink !== null && \file_exists($this->toUnlink)) {
+        if ($this->toUnlink !== null && \file_exists($this->toUnlink)) {
             \unlink($this->toUnlink);
         }
 
@@ -126,11 +126,11 @@ final class IpcServer implements IpcServerInterface
 
     public function sendJobResult(mixed $result, Channel $channel, JobRequest $jobRequest, ?Cancellation $cancellation = null): void
     {
-        if($result === null) {
+        if ($result === null) {
             return;
         }
 
-        if($channel->isClosed()) {
+        if ($channel->isClosed()) {
             return;
         }
 
@@ -151,7 +151,7 @@ final class IpcServer implements IpcServerInterface
         }
 
         // Try to send the result sendResultAttempts times.
-        for($i = 1; $i <= $this->sendResultAttempts; $i++) {
+        for ($i = 1; $i <= $this->sendResultAttempts; $i++) {
             try {
                 $channel->send($response);
                 break;
@@ -161,7 +161,7 @@ final class IpcServer implements IpcServerInterface
                     ['exception' => $exception, 'request' => $jobRequest]
                 );
 
-                if($i < $this->sendResultAttempts) {
+                if ($i < $this->sendResultAttempts) {
                     delay($this->attemptDelay, true, $cancellation);
                 }
             }
@@ -185,7 +185,7 @@ final class IpcServer implements IpcServerInterface
             try {
                 while (($data = $channel->receive($cancellation)) !== null) {
 
-                    if($data === self::CLOSE_HAND_SHAKE) {
+                    if ($data === self::CLOSE_HAND_SHAKE) {
                         $channel->close();
                         break;
                     }

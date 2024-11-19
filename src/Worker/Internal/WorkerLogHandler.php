@@ -8,6 +8,8 @@ use Amp\ForbidSerialization;
 use Amp\Sync\Channel;
 use IfCastle\AmpPool\Exceptions\RemoteException;
 use IfCastle\AmpPool\Internal\Messages\MessageLog;
+use IfCastle\AmpPool\WorkerGroup;
+use IfCastle\AmpPool\WorkerTypeEnum;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Level;
 use Monolog\LogRecord;
@@ -23,6 +25,8 @@ final class WorkerLogHandler extends AbstractProcessingHandler
     use ForbidCloning;
     use ForbidSerialization;
 
+    private int $pid;
+
     /**
      * @param value-of<Level::NAMES>|value-of<Level::VALUES>|Level|LogLevel::* $level
      *
@@ -30,9 +34,12 @@ final class WorkerLogHandler extends AbstractProcessingHandler
      */
     public function __construct(
         private readonly Channel $channel,
+        private readonly int $workerId,
+        private readonly WorkerGroup $workerGroup,
         int|string|Level $level = LogLevel::DEBUG,
         bool $bubble = false,
     ) {
+        $this->pid                  = \getmypid();
         parent::__construct($level, $bubble);
     }
 
@@ -44,43 +51,58 @@ final class WorkerLogHandler extends AbstractProcessingHandler
         // Remove all unserializable data.
         $record = $this->removeUnserializableData($record);
 
-        $this->channel->send(new MessageLog($record['message'] ?? '', $record['level_name'] ?? '', $record['context'] ?? []));
+        if (!\array_key_exists('context', $record)) {
+            $record['context'] = [];
+        }
+
+        $record['context']['workerId']      = $this->workerId;
+        $record['context']['workerGroupId'] = $this->workerGroup->getWorkerGroupId();
+        $record['context']['worker']        = match ($this->workerGroup->getWorkerType()) {
+            WorkerTypeEnum::REACTOR     => 'reactor',
+            WorkerTypeEnum::JOB         => 'job',
+            WorkerTypeEnum::SERVICE     => 'service',
+            default                     => null
+        };
+
+        $record['context']['workerPid'] = $this->pid;
+
+        $this->channel->send(new MessageLog($record['message'] ?? '', $record['level_name'] ?? '', $record['context']));
     }
 
     private function removeUnserializableData(array|LogRecord $record, int $recursion = 0): array|LogRecord
     {
-        if($recursion > 10) {
+        if ($recursion > 10) {
             return [];
         }
 
-        if($record instanceof LogRecord) {
+        if ($record instanceof LogRecord) {
             $record                 = $record->toArray();
         }
 
-        if(\is_array($record)) {
+        if (\is_array($record)) {
             foreach ($record as $key => $value) {
-                if(\is_array($value)) {
+                if (\is_array($value)) {
                     $record[$key] = $this->removeUnserializableData($value, $recursion + 1);
                 }
 
-                if($value instanceof RemoteException) {
+                if ($value instanceof RemoteException) {
                     continue;
                 }
 
-                if($value instanceof \Throwable) {
+                if ($value instanceof \Throwable) {
                     $record[$key] = $record[$key]->getMessage().' in '.$record[$key]->getFile().':'.$record[$key]->getLine()
                                     .PHP_EOL.$record[$key]->getTraceAsString();
                 }
 
-                if(\is_object($value)) {
+                if (\is_object($value)) {
                     $record[$key] = 'object::'.\get_class($value);
                 }
 
-                if(\is_resource($value)) {
+                if (\is_resource($value)) {
                     $record[$key] = 'resource::' . \get_resource_type($value);
                 }
 
-                if(\is_callable($value)) {
+                if (\is_callable($value)) {
                     $record[$key] = 'callable(...)';
                 }
             }

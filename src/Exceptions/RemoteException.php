@@ -55,7 +55,7 @@ class RemoteException extends \RuntimeException
 
     protected static function _toArray(?\Throwable $exception = null, int $recursion = 0): ?array
     {
-        if(null === $exception) {
+        if (null === $exception) {
             return null;
         }
 
@@ -64,7 +64,7 @@ class RemoteException extends \RuntimeException
         }
 
         // Ignore self and unwrap previous exceptions
-        if($exception instanceof self && $exception->getPrevious() !== null) {
+        if ($exception instanceof self && $exception->getPrevious() !== null) {
             $exception              = $exception->getPrevious();
         }
 
@@ -91,7 +91,7 @@ class RemoteException extends \RuntimeException
 
             foreach ($item['args'] as $k => $arg) {
                 if (\is_string($arg)) {
-                    if(\strlen($arg) <= 64) {
+                    if (\strlen($arg) <= 64) {
                         $trace[$key]['args'][$k] = \substr($arg, 0, 61) . '...';
                     } else {
                         $trace[$key]['args'][$k] = $arg;
@@ -109,21 +109,21 @@ class RemoteException extends \RuntimeException
 
     public function __unserialize(array $data): void
     {
-        if(\array_key_exists('message', $data)) {
+        if (\array_key_exists('message', $data)) {
             $this->message          = 'Remote exception: '.$data['message'];
         } else {
             $this->message          = 'Remote exception';
         }
 
-        if(\array_key_exists('code', $data)) {
+        if (\array_key_exists('code', $data)) {
             $this->code             = $data['code'];
         }
 
-        if(\array_key_exists('file', $data)) {
+        if (\array_key_exists('file', $data)) {
             $this->file             = $data['file'];
         }
 
-        if(\array_key_exists('line', $data)) {
+        if (\array_key_exists('line', $data)) {
             $this->line             = $data['line'];
         }
 

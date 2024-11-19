@@ -106,7 +106,7 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
     {
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool === null) {
+        if ($workerPool === null) {
             throw new \RuntimeException('Worker pool is not defined.');
         }
 
@@ -126,7 +126,7 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
             new TimeoutCancellation(2, 'Worker <== Watcher: The waiting time for the message has expired.')
         );
 
-        if(empty($data)) {
+        if (empty($data)) {
             throw new FatalWorkerException('Worker <== Watcher: Could not read IPC data from channel');
         }
 
@@ -136,15 +136,15 @@ class DefaultRunner extends WorkerStrategyAbstract implements RunnerStrategyInte
             }
         }
 
-        if(false === $data['group'] instanceof WorkerGroupInterface) {
+        if (false === $data['group'] instanceof WorkerGroupInterface) {
             throw new \Error('Invalid group type. Expected WorkerGroupInterface');
         }
 
-        if(!\is_array($data['groupsScheme'])) {
+        if (!\is_array($data['groupsScheme'])) {
             throw new \Error('Invalid groups scheme. Expected array');
         }
-        
-        if(false === array_key_exists('context', $data)) {
+
+        if (false === \array_key_exists('context', $data)) {
             $data['context']        = [];
         }
 

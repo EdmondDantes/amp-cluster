@@ -19,11 +19,11 @@ final class RestartEntryPoint implements WorkerEntryPointInterface
     {
         $file                       = self::getFile();
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             \unlink($file);
         }
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             throw new \RuntimeException('Could not remove file: ' . $file);
         }
     }
@@ -37,14 +37,14 @@ final class RestartEntryPoint implements WorkerEntryPointInterface
 
     public function run(): void
     {
-        if(\is_file(self::getFile()) && (int) \file_get_contents(self::getFile()) >= 1) {
+        if (\is_file(self::getFile()) && (int) \file_get_contents(self::getFile()) >= 1) {
             // second time terminate worker
             throw new TerminateWorkerException;
         }
 
         $this->worker->awaitTermination(new TimeoutCancellation(5));
 
-        if(\is_file(self::getFile())) {
+        if (\is_file(self::getFile())) {
             $content                = \file_get_contents(self::getFile());
             $content                = (int) $content + 1;
         } else {

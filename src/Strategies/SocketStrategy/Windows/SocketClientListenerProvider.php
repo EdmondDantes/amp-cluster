@@ -88,7 +88,7 @@ final class SocketClientListenerProvider
 
     public function addWorker(int $workerId): self
     {
-        if(\in_array($workerId, $this->workers)) {
+        if (\in_array($workerId, $this->workers)) {
             return $this;
         }
 
@@ -112,11 +112,11 @@ final class SocketClientListenerProvider
 
     public function stopIfNoWorkers(): bool
     {
-        if(!empty($this->workers)) {
+        if (!empty($this->workers)) {
             return false;
         }
 
-        if(false === $this->deferredCancellation->isCancelled()) {
+        if (false === $this->deferredCancellation->isCancelled()) {
             $this->deferredCancellation->cancel();
         }
 
@@ -138,7 +138,7 @@ final class SocketClientListenerProvider
 
                 $foundedWorker      = $this->workerPool->findWorkerContext($foundedWorkerId);
 
-                if($foundedWorker === null) {
+                if ($foundedWorker === null) {
                     $socket->close();
                     return;
                 }
@@ -147,7 +147,7 @@ final class SocketClientListenerProvider
 
                 $socketId           = Safe::execute(fn () => \socket_wsaprotocol_info_export(\socket_import_stream($socket->getResource()), $pid));
 
-                if(false === $socketId) {
+                if (false === $socketId) {
                     $socket->close();
                     throw new \Exception('Failed to export socket information');
                 }
@@ -163,7 +163,7 @@ final class SocketClientListenerProvider
         } catch (CancelledException) {
             // ignore
         } finally {
-            if(false === $server->isClosed()) {
+            if (false === $server->isClosed()) {
                 $server->close();
             }
         }
@@ -216,13 +216,13 @@ final class SocketClientListenerProvider
 
     private function pickupWorker(): int|null
     {
-        if(empty($this->workers)) {
+        if (empty($this->workers)) {
             return null;
         }
 
         $workerId                   = $this->pickupWorkerByRequests();
 
-        if($workerId !== null) {
+        if ($workerId !== null) {
             return $workerId;
         }
 
@@ -233,7 +233,7 @@ final class SocketClientListenerProvider
         $workers                    = [];
 
         foreach ($this->workers as $workerId) {
-            if($this->workerPool->isWorkerRunning($workerId)) {
+            if ($this->workerPool->isWorkerRunning($workerId)) {
                 $workers[]          = $workerId;
             }
         }
@@ -249,22 +249,22 @@ final class SocketClientListenerProvider
         $workers                    = [];
 
         foreach ($this->workers as $workerId) {
-            if($this->workerPool->isWorkerRunning($workerId)) {
+            if ($this->workerPool->isWorkerRunning($workerId)) {
                 $workers[]          = $workerId;
             }
         }
 
         foreach ($workers as $workerId) {
 
-            if(empty($this->workerStatus[$workerId])) {
+            if (empty($this->workerStatus[$workerId])) {
                 continue;
             }
 
-            if(false === \array_key_exists($workerId, $this->requestsByWorker) || $this->requestsByWorker[$workerId] === 0) {
+            if (false === \array_key_exists($workerId, $this->requestsByWorker) || $this->requestsByWorker[$workerId] === 0) {
                 return $workerId;
             }
 
-            if($minRequests === 0 || $this->requestsByWorker[$workerId] < $minRequests) {
+            if ($minRequests === 0 || $this->requestsByWorker[$workerId] < $minRequests) {
                 $minRequests        = $this->requestsByWorker[$workerId];
                 $selectedWorkerId   = $workerId;
             }
@@ -275,16 +275,16 @@ final class SocketClientListenerProvider
 
     private function eventListener(mixed $event, int $workerId = 0): void
     {
-        if($event instanceof MessageReady || $event instanceof MessageSocketTransfer) {
+        if ($event instanceof MessageReady || $event instanceof MessageSocketTransfer) {
             $this->workerStatus[$workerId] = true;
             return;
         }
 
-        if($event instanceof MessageSocketFree) {
+        if ($event instanceof MessageSocketFree) {
             $this->freeTransferredSocket($workerId, $event->socketId);
         }
 
-        if($event instanceof WorkerProcessTerminating) {
+        if ($event instanceof WorkerProcessTerminating) {
             $this->shutdownWorker($workerId);
         }
     }
@@ -300,25 +300,25 @@ final class SocketClientListenerProvider
 
     private function freeTransferredSocket(int $workerId, ?string $socketId = null): void
     {
-        if($socketId === null) {
+        if ($socketId === null) {
             return;
         }
 
         $this->workerStatus[$workerId]      = true;
 
-        if(\array_key_exists($socketId, $this->transferredSockets)) {
+        if (\array_key_exists($socketId, $this->transferredSockets)) {
             $this->transferredSockets[$socketId]->close();
             unset($this->transferredSockets[$socketId]);
         }
 
-        if(\array_key_exists($workerId, $this->transferredSocketsByWorker)) {
+        if (\array_key_exists($workerId, $this->transferredSocketsByWorker)) {
             $this->transferredSocketsByWorker[$workerId] = \array_diff($this->transferredSocketsByWorker[$workerId], [$socketId]);
         }
 
-        if(\array_key_exists($workerId, $this->requestsByWorker)) {
+        if (\array_key_exists($workerId, $this->requestsByWorker)) {
             $this->requestsByWorker[$workerId]--;
 
-            if($this->requestsByWorker[$workerId] < 0) {
+            if ($this->requestsByWorker[$workerId] < 0) {
                 $this->requestsByWorker[$workerId] = 0;
             }
         }
@@ -329,9 +329,9 @@ final class SocketClientListenerProvider
         $this->workerStatus[$workerId]      = false;
         $this->workers                      = \array_diff($this->workers, [$workerId]);
 
-        if(\array_key_exists($workerId, $this->transferredSocketsByWorker)) {
+        if (\array_key_exists($workerId, $this->transferredSocketsByWorker)) {
             foreach ($this->transferredSocketsByWorker[$workerId] as $socketId) {
-                if(\array_key_exists($socketId, $this->transferredSockets)) {
+                if (\array_key_exists($socketId, $this->transferredSockets)) {
                     $this->transferredSockets[$socketId]->close();
                     unset($this->transferredSockets[$socketId]);
                 }
@@ -340,7 +340,7 @@ final class SocketClientListenerProvider
             $this->transferredSocketsByWorker[$workerId] = [];
         }
 
-        if(\array_key_exists($workerId, $this->requestsByWorker)) {
+        if (\array_key_exists($workerId, $this->requestsByWorker)) {
             $this->requestsByWorker[$workerId] = 0;
         }
     }

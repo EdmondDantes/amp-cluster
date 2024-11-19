@@ -25,14 +25,14 @@ final class EventWeakHandler
         $eventEmitter               = $this->eventEmitter?->get();
         $self                       = $this->self?->get();
 
-        if($eventEmitter === null || $this->closure === null) {
+        if ($eventEmitter === null || $this->closure === null) {
             $this->eventEmitter     = null;
             $this->self             = null;
             $this->closure          = null;
             return;
         }
 
-        if($self === null) {
+        if ($self === null) {
 
             $eventEmitter->removeWorkerEventListener($this->closure);
 

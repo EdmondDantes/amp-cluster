@@ -30,33 +30,33 @@ final class RestartWithWindowLimiter extends WorkerStrategyAbstract implements R
 
     public function shouldRestart(mixed $exitResult): int
     {
-        if($this->isError && false === $exitResult instanceof \Throwable) {
+        if ($this->isError && false === $exitResult instanceof \Throwable) {
             return RestartStrategyInterface::RESTART_IMMEDIATELY;
         }
 
-        if(($this->lastRestartWindow + $this->windowDuration) <= \time()) {
+        if (($this->lastRestartWindow + $this->windowDuration) <= \time()) {
             $this->currentInterval  = null;
             $this->restartsCount    = 0;
         }
 
-        if($this->restartsCount >= $this->maxRestarts) {
+        if ($this->restartsCount >= $this->maxRestarts) {
             return RestartStrategyInterface::RESTART_NEVER;
         }
 
         $this->restartsCount++;
 
-        if($this->lastRestartWindow === 0) {
+        if ($this->lastRestartWindow === 0) {
             $this->lastRestartWindow = \time();
         }
 
-        if($this->currentInterval === null) {
+        if ($this->currentInterval === null) {
             $this->currentInterval = $this->restartInterval;
             return $this->currentInterval;
         }
 
         $this->currentInterval      += $this->step;
 
-        if($this->currentInterval < $this->intervalThreshold) {
+        if ($this->currentInterval < $this->intervalThreshold) {
             return $this->currentInterval;
         }
 

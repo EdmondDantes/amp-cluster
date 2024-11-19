@@ -39,7 +39,7 @@ final class JobClientDefault extends WorkerStrategyAbstract implements JobClient
 
     public function onStarted(): void
     {
-        if($this->getWorkerGroup() !== null && $this->getWorkerGroup()->getJobGroups() === []) {
+        if ($this->getWorkerGroup() !== null && $this->getWorkerGroup()->getJobGroups() === []) {
             throw new FatalWorkerException(
                 'JobClient strategy requires at least one JobGroup to be defined in the WorkerGroup. '
                 .'Please define jobGroups before starting the WorkerPool.'
@@ -48,7 +48,7 @@ final class JobClientDefault extends WorkerStrategyAbstract implements JobClient
 
         $worker                     = $this->getSelfWorker();
 
-        if($worker === null) {
+        if ($worker === null) {
             return;
         }
 
@@ -65,7 +65,7 @@ final class JobClientDefault extends WorkerStrategyAbstract implements JobClient
     {
         $worker                     = $this->getWorker();
 
-        if($worker === null) {
+        if ($worker === null) {
             return;
         }
 

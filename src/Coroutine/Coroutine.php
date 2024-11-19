@@ -21,14 +21,14 @@ final class Coroutine implements CoroutineInterface
     ) {
         $this->future               = new DeferredFuture;
 
-        if($this->startAt === 0) {
+        if ($this->startAt === 0) {
             $this->startAt          = \time();
         }
     }
 
     public function execute(): mixed
     {
-        if(null === $this->closure) {
+        if (null === $this->closure) {
             throw new \Error('Coroutine is already executed');
         }
 
@@ -40,14 +40,14 @@ final class Coroutine implements CoroutineInterface
 
     public function resolve(mixed $data = null): void
     {
-        if(false === $this->future->isComplete()) {
+        if (false === $this->future->isComplete()) {
             $this->future->complete($data);
         }
     }
 
     public function fail(\Throwable $exception): void
     {
-        if(false === $this->future->isComplete()) {
+        if (false === $this->future->isComplete()) {
             $this->future->error($exception);
         }
     }
@@ -59,7 +59,7 @@ final class Coroutine implements CoroutineInterface
 
     public function defineSuspension(Suspension $suspension): void
     {
-        if($this->suspension !== null) {
+        if ($this->suspension !== null) {
             throw new \Error('Suspension is already defined');
         }
 
@@ -68,7 +68,7 @@ final class Coroutine implements CoroutineInterface
 
     public function defineSchedulerSuspension(Suspension $schedulerSuspension): void
     {
-        if($this->schedulerSuspension !== null) {
+        if ($this->schedulerSuspension !== null) {
             throw new \Error('Scheduler is already defined');
         }
 

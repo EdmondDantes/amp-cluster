@@ -46,18 +46,18 @@ final class Scheduler implements SchedulerInterface
 
             $this->managerResumed   = false;
 
-            if($this->coroutinesQueue === []) {
+            if ($this->coroutinesQueue === []) {
 
                 $this->highestPriority = 0;
 
                 foreach ($this->coroutines as $coroutine) {
-                    if($coroutine->getPriority() > $this->highestPriority) {
+                    if ($coroutine->getPriority() > $this->highestPriority) {
                         $this->highestPriority = $coroutine->getPriority();
                     }
                 }
 
                 foreach ($this->coroutines as $coroutine) {
-                    if($coroutine->getPriority() === $this->highestPriority) {
+                    if ($coroutine->getPriority() === $this->highestPriority) {
                         $this->coroutinesQueue[] = $coroutine;
                     }
                 }
@@ -70,10 +70,10 @@ final class Scheduler implements SchedulerInterface
 
         try {
 
-            if($this->stopException !== null) {
+            if ($this->stopException !== null) {
                 foreach ($this->coroutines as $callbackId => $coroutine) {
 
-                    if($coroutine->getSuspension() === null) {
+                    if ($coroutine->getSuspension() === null) {
                         EventLoop::cancel($callbackId);
                     } else {
                         $coroutine->getSuspension()->throw($this->stopException);
@@ -111,11 +111,11 @@ final class Scheduler implements SchedulerInterface
 
             $self                   = $selfRef->get();
 
-            if($self === null) {
+            if ($self === null) {
                 return;
             }
 
-            if(false === \array_key_exists($callbackId, $self->coroutines)) {
+            if (false === \array_key_exists($callbackId, $self->coroutines)) {
                 $coroutine->fail(new CoroutineNotStarted);
                 return;
             }
@@ -132,7 +132,7 @@ final class Scheduler implements SchedulerInterface
 
                 $coroutine->fail($exception);
 
-                if($exception !== $this->stopException) {
+                if ($exception !== $this->stopException) {
                     throw $exception;
                 }
 
@@ -142,7 +142,7 @@ final class Scheduler implements SchedulerInterface
 
                 $coroutine->resolve();
 
-                if($self !== null) {
+                if ($self !== null) {
                     unset($self->coroutines[$callbackId]);
                 }
 
@@ -152,7 +152,7 @@ final class Scheduler implements SchedulerInterface
 
         $this->coroutines[$callbackId] = $coroutine;
 
-        if($coroutine->getPriority() >= $this->highestPriority) {
+        if ($coroutine->getPriority() >= $this->highestPriority) {
             $this->coroutinesQueue  = [];
         }
 
@@ -161,7 +161,7 @@ final class Scheduler implements SchedulerInterface
 
     public function awaitAll(?Cancellation $cancellation = null): void
     {
-        if($this->coroutines === [] || $this->future === null) {
+        if ($this->coroutines === [] || $this->future === null) {
             return;
         }
 
@@ -183,7 +183,7 @@ final class Scheduler implements SchedulerInterface
 
     protected function resume(): void
     {
-        if($this->managerResumed) {
+        if ($this->managerResumed) {
             return;
         }
 

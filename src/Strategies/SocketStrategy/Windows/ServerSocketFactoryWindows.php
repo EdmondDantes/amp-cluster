@@ -57,7 +57,7 @@ final class ServerSocketFactoryWindows implements ServerSocket
 
     public function close(): void
     {
-        if(false === $this->queue->isComplete()) {
+        if (false === $this->queue->isComplete()) {
             $this->queue->complete();
         }
 
@@ -65,7 +65,7 @@ final class ServerSocketFactoryWindows implements ServerSocket
             $this->onClose->complete();
         }
 
-        if($this->workerEventHandler !== null) {
+        if ($this->workerEventHandler !== null) {
             $this->workerEventEmitter->removeWorkerEventListener($this->workerEventHandler);
             $this->workerEventHandler = null;
         }
@@ -86,7 +86,7 @@ final class ServerSocketFactoryWindows implements ServerSocket
      */
     public function accept(?Cancellation $cancellation = null): ?Socket
     {
-        if($cancellation !== null) {
+        if ($cancellation !== null) {
             $cancellation           = new CompositeCancellation($cancellation, $this->abortCancellation);
         } else {
             $cancellation           = $this->abortCancellation;
@@ -102,13 +102,13 @@ final class ServerSocketFactoryWindows implements ServerSocket
 
         $message                    = $this->iterator->getValue();
 
-        if(false === $message instanceof MessageSocketTransfer) {
+        if (false === $message instanceof MessageSocketTransfer) {
             throw new SocketException('Invalid message received. Required MessageSocketTransfer. Got: '.\get_debug_type($message));
         }
 
         $socket                     = \socket_wsaprotocol_info_import($message->socketId);
 
-        if(false === $socket) {
+        if (false === $socket) {
             throw new SocketException('Failed importing socket from ID: '.$message->socketId);
         }
 
@@ -134,7 +134,7 @@ final class ServerSocketFactoryWindows implements ServerSocket
      */
     private function workerEventHandler(mixed $message, int $workerId = 0): void
     {
-        if($message instanceof MessageSocketTransfer) {
+        if ($message instanceof MessageSocketTransfer) {
             $this->queue->pushAsync($message)->ignore();
         }
     }

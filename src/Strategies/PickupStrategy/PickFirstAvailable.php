@@ -14,7 +14,7 @@ final class PickFirstAvailable extends PickupStrategyAbstract
         int   $tryCount = 0
     ): ?int {
         foreach ($this->iterate($possibleGroups, $possibleWorkers, $ignoredWorkers) as $workerState) {
-            if($workerState->isReady()) {
+            if ($workerState->isReady()) {
                 return $workerState->getWorkerId();
             }
         }

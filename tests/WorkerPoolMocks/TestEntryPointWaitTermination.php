@@ -17,11 +17,11 @@ final class TestEntryPointWaitTermination implements WorkerEntryPointInterface
     {
         $file                       = self::getFile();
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             \unlink($file);
         }
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             throw new \RuntimeException('Could not remove file: ' . $file);
         }
     }

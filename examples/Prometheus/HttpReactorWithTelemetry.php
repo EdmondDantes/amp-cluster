@@ -56,7 +56,7 @@ final class HttpReactorWithTelemetry implements WorkerEntryPointInterface
         // And use it for the request handler
         $requestHandler             = new RequestHandler($workerTelemetry, static function (Request $request) use ($worker, $workerState): Response {
 
-            if(!empty($request->getQueryParameter('job'))) {
+            if (!empty($request->getQueryParameter('job'))) {
                 $worker->getWorkerGroup()->getJobClient()->sendJob($request->getQueryParameter('job'));
 
                 return new Response(

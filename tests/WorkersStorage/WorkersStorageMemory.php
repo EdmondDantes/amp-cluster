@@ -27,14 +27,14 @@ final class WorkersStorageMemory implements WorkersStorageInterface
                                       $this->getMemoryUsage()->getStructureSize() +
                                       $this->structureSize * $this->workersCount;
 
-        if($this->workersCount > 0) {
+        if ($this->workersCount > 0) {
             $this->isWrite          = true;
         }
     }
 
     private function open(): void
     {
-        if($this->buffer !== '') {
+        if ($this->buffer !== '') {
             return;
         }
 
@@ -45,7 +45,7 @@ final class WorkersStorageMemory implements WorkersStorageInterface
     {
         $class                      = $this->storageClass;
 
-        if(\is_subclass_of($class, WorkerStateInterface::class) === false) {
+        if (\is_subclass_of($class, WorkerStateInterface::class) === false) {
             throw new \RuntimeException('Invalid storage class provided. Expected ' . WorkerStateInterface::class . ' implementation');
         }
 
@@ -68,7 +68,7 @@ final class WorkersStorageMemory implements WorkersStorageInterface
 
         $workers                    = [];
 
-        for($i = 0; $i < $this->workersCount; $i++) {
+        for ($i = 0; $i < $this->workersCount; $i++) {
             $workers[]              = $this->readWorkerState($i + 1);
         }
 
@@ -79,7 +79,7 @@ final class WorkersStorageMemory implements WorkersStorageInterface
     {
         $this->open();
 
-        if($workerId < 0) {
+        if ($workerId < 0) {
             throw new \RuntimeException('Invalid worker id provided');
         }
 
@@ -92,11 +92,11 @@ final class WorkersStorageMemory implements WorkersStorageInterface
     {
         $this->open();
 
-        if($workerId < 0) {
+        if ($workerId < 0) {
             throw new \RuntimeException('Invalid worker id provided');
         }
 
-        if(false === $this->isWrite) {
+        if (false === $this->isWrite) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
@@ -128,13 +128,13 @@ final class WorkersStorageMemory implements WorkersStorageInterface
     {
         $this->open();
 
-        if(false === $this->isWrite || $this->workerId !== 0) {
+        if (false === $this->isWrite || $this->workerId !== 0) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
         $size                       = $this->getApplicationState()->getStructureSize();
 
-        if(\strlen($data) !== $size) {
+        if (\strlen($data) !== $size) {
             throw new \RuntimeException('Invalid application state data size');
         }
 
@@ -159,13 +159,13 @@ final class WorkersStorageMemory implements WorkersStorageInterface
     {
         $this->open();
 
-        if(false === $this->isWrite || $this->workerId !== 0) {
+        if (false === $this->isWrite || $this->workerId !== 0) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
         $size                       = $this->getMemoryUsage()->getStructureSize();
 
-        if(\strlen($data) !== $size) {
+        if (\strlen($data) !== $size) {
             throw new \RuntimeException('Invalid memory usage data size');
         }
 

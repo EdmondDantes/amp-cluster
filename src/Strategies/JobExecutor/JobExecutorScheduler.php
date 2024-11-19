@@ -51,7 +51,7 @@ final class JobExecutorScheduler extends JobExecutorAbstract
     {
         parent::onStarted();
 
-        if($this->isWorker()) {
+        if ($this->isWorker()) {
             $this->scheduler        = new Scheduler();
         }
     }
@@ -69,7 +69,7 @@ final class JobExecutorScheduler extends JobExecutorAbstract
 
             $handler                = $handler->get();
 
-            if($handler instanceof JobHandlerInterface) {
+            if ($handler instanceof JobHandlerInterface) {
                 return $handler->handleJob($data, $coroutine, $cancellation);
             }
 
@@ -90,7 +90,7 @@ final class JobExecutorScheduler extends JobExecutorAbstract
 
     public function awaitAll(?Cancellation $cancellation = null): void
     {
-        if($cancellation === null && $this->maxAwaitAllTimeout > 0) {
+        if ($cancellation === null && $this->maxAwaitAllTimeout > 0) {
             $cancellation           = new TimeoutCancellation(
                 $this->maxAwaitAllTimeout,
                 'JobRunnerAsync::awaitAll() timed out: '.$this->maxAwaitAllTimeout.'s'

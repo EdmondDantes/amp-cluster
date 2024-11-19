@@ -39,7 +39,7 @@ final class SocketListenerProvider
 
         $stringAddress              = (string) $address;
 
-        if(\array_key_exists($stringAddress, $this->socketListeners)) {
+        if (\array_key_exists($stringAddress, $this->socketListeners)) {
             $this->socketListeners[$stringAddress]->addWorker($workerId);
             return;
         }
@@ -53,7 +53,7 @@ final class SocketListenerProvider
     {
         $this->socketListeners = [];
 
-        if($this->eventListener !== null) {
+        if ($this->eventListener !== null) {
             $this->workerPool->getWorkerEventEmitter()->removeWorkerEventListener($this->eventListener);
             $this->eventListener = null;
         }
@@ -65,7 +65,7 @@ final class SocketListenerProvider
             $this->listen($workerId, $event->address);
         }
 
-        if($event instanceof WorkerProcessTerminating) {
+        if ($event instanceof WorkerProcessTerminating) {
             $this->removeWorker($workerId);
             //
             // Hack!
@@ -77,15 +77,15 @@ final class SocketListenerProvider
 
     private function removeWorker(int $workerId): void
     {
-        foreach($this->socketListeners as $listener) {
+        foreach ($this->socketListeners as $listener) {
             $listener->removeWorker($workerId);
         }
     }
 
     private function cleanListeners(): void
     {
-        foreach($this->socketListeners as $address => $listener) {
-            if($listener->stopIfNoWorkers()) {
+        foreach ($this->socketListeners as $address => $listener) {
+            if ($listener->stopIfNoWorkers()) {
                 unset($this->socketListeners[$address]);
             }
         }

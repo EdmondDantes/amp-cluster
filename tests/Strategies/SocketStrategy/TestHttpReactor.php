@@ -26,11 +26,11 @@ final class TestHttpReactor implements WorkerEntryPointInterface
     {
         $file                       = self::getFile();
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             \unlink($file);
         }
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             throw new \RuntimeException('Could not remove file: ' . $file);
         }
     }
@@ -52,7 +52,7 @@ final class TestHttpReactor implements WorkerEntryPointInterface
 
         $socketFactory              = $worker->getWorkerGroup()->getSocketStrategy()?->getServerSocketFactory();
 
-        if($socketFactory === null) {
+        if ($socketFactory === null) {
             throw new \RuntimeException('The socket factory is not available!');
         }
 

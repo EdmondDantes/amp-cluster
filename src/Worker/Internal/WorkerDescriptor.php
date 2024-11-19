@@ -28,7 +28,7 @@ final class WorkerDescriptor
 
     public function starting(): void
     {
-        if($this->startFuture === null || $this->startFuture->isComplete()) {
+        if ($this->startFuture === null || $this->startFuture->isComplete()) {
             $this->startFuture      = new DeferredFuture;
         }
 
@@ -37,7 +37,7 @@ final class WorkerDescriptor
 
     public function started(): void
     {
-        if($this->startFuture?->isComplete() === false) {
+        if ($this->startFuture?->isComplete() === false) {
             $this->startFuture->complete();
         }
     }

@@ -53,18 +53,18 @@ final class WorkersStorage implements WorkersStorageInterface
 
         $this->key                  = \ftok(__FILE__, 's');
 
-        if($this->key === -1) {
+        if ($this->key === -1) {
             throw new \RuntimeException('Failed to generate key ftok');
         }
 
-        if($this->workersCount > 0) {
+        if ($this->workersCount > 0) {
             $this->isWrite          = true;
         }
     }
 
     private function open(): void
     {
-        if($this->handler !== null) {
+        if ($this->handler !== null) {
             return;
         }
 
@@ -73,12 +73,12 @@ final class WorkersStorage implements WorkersStorageInterface
         });
 
         try {
-            if($this->isWrite) {
+            if ($this->isWrite) {
 
                 // For written mode, we need to calculate the total size of the shared memory segment
                 // based on the size of the data structures and the number of workers.
 
-                if($this->workersCount === 0) {
+                if ($this->workersCount === 0) {
                     throw new \RuntimeException('Invalid workers count for write mode');
                 }
 
@@ -94,13 +94,13 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($handler === false) {
+        if ($handler === false) {
             throw new \RuntimeException('Failed to open shared memory');
         }
 
         $this->handler              = $handler;
 
-        if($this->workersCount === 0) {
+        if ($this->workersCount === 0) {
             $this->getApplicationState()->read();
             $this->workersCount     = $this->getApplicationState()->getWorkersCount();
         }
@@ -110,7 +110,7 @@ final class WorkersStorage implements WorkersStorageInterface
     {
         $class                      = $this->storageClass;
 
-        if(\is_subclass_of($class, WorkerStateInterface::class) === false) {
+        if (\is_subclass_of($class, WorkerStateInterface::class) === false) {
             throw new \RuntimeException('Invalid storage class provided. Expected ' . WorkerStateInterface::class . ' implementation');
         }
 
@@ -148,21 +148,21 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read Workers data from shared memory');
         }
 
         $workersCount               = (int) (\strlen($data) / $this->structureSize);
 
-        if($this->workersCount === 0) {
+        if ($this->workersCount === 0) {
             $this->workersCount     = $workersCount;
-        } elseif($this->workersCount !== $workersCount) {
+        } elseif ($this->workersCount !== $workersCount) {
             throw new \RuntimeException('Invalid workers count in shared memory');
         }
 
         $workers                    = [];
 
-        for($i = 0; $i < $workersCount; $i++) {
+        for ($i = 0; $i < $workersCount; $i++) {
             $workers[]              = \forward_static_call(
                 [$this->storageClass, 'unpackItem'],
                 \substr($data, $i * $this->structureSize, $this->structureSize),
@@ -177,7 +177,7 @@ final class WorkersStorage implements WorkersStorageInterface
     {
         $this->validateWorkerId($workerId);
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
@@ -197,7 +197,7 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read data from shared memory for worker ' . $workerId . ' at offset ' . $offset);
         }
 
@@ -208,11 +208,11 @@ final class WorkersStorage implements WorkersStorageInterface
     {
         $this->validateWorkerId($workerId);
 
-        if(false === $this->isWrite) {
+        if (false === $this->isWrite) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
@@ -231,14 +231,14 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($count === false) {
+        if ($count === false) {
             throw new \RuntimeException('Failed to write data to shared memory for worker ' . $workerId . ' at offset ' . $offset);
         }
     }
 
     public function getApplicationState(): ApplicationStateInterface
     {
-        if($this->applicationState !== null) {
+        if ($this->applicationState !== null) {
             return $this->applicationState;
         }
 
@@ -251,11 +251,11 @@ final class WorkersStorage implements WorkersStorageInterface
     {
         $size                       = $this->getApplicationState()->getStructureSize();
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
-        if($size > \shmop_size($this->handler)) {
+        if ($size > \shmop_size($this->handler)) {
             throw new \RuntimeException('Shared memory segment is too small for ApplicationState data');
         }
 
@@ -269,7 +269,7 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read ApplicationState data from shared memory');
         }
 
@@ -278,15 +278,15 @@ final class WorkersStorage implements WorkersStorageInterface
 
     public function updateApplicationState(string $data): void
     {
-        if(false === $this->isWrite || $this->workerId !== 0) {
+        if (false === $this->isWrite || $this->workerId !== 0) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
-        if(\strlen($data) !== $this->getApplicationState()->getStructureSize()) {
+        if (\strlen($data) !== $this->getApplicationState()->getStructureSize()) {
             throw new \InvalidArgumentException('Invalid data size for ApplicationState');
         }
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
@@ -300,18 +300,18 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($count === false) {
+        if ($count === false) {
             throw new \RuntimeException('Failed to write ApplicationState data to shared memory');
         }
     }
 
     public function getMemoryUsage(): MemoryUsageInterface
     {
-        if($this->memoryUsage !== null) {
+        if ($this->memoryUsage !== null) {
             return $this->memoryUsage;
         }
 
-        if($this->workersCount === 0) {
+        if ($this->workersCount === 0) {
             $this->open();
         }
 
@@ -326,11 +326,11 @@ final class WorkersStorage implements WorkersStorageInterface
         $offset                     = $this->getApplicationState()->getStructureSize();
         $size                       = $this->getMemoryUsage()->getStructureSize();
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
-        if(($offset + $size) > \shmop_size($this->handler)) {
+        if (($offset + $size) > \shmop_size($this->handler)) {
             throw new \RuntimeException('Shared memory segment is too small for MemoryUsage data: '
                                         . \shmop_size($this->handler) . ' < ' . ($offset + $size) . ' bytes');
         }
@@ -345,7 +345,7 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read MemoryUsage data from shared memory');
         }
 
@@ -354,18 +354,18 @@ final class WorkersStorage implements WorkersStorageInterface
 
     public function updateMemoryUsage(string $data): void
     {
-        if(false === $this->isWrite  || $this->workerId !== 0) {
+        if (false === $this->isWrite  || $this->workerId !== 0) {
             throw new \RuntimeException('This instance WorkersStorage is read-only');
         }
 
-        if(\strlen($data) !== $this->getMemoryUsage()->getStructureSize()) {
+        if (\strlen($data) !== $this->getMemoryUsage()->getStructureSize()) {
             throw new \InvalidArgumentException('Invalid data size for MemoryUsage');
         }
 
         // The memory usage data is stored after the ApplicationState data
         $offset                     = $this->getApplicationState()->getStructureSize();
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             $this->open();
         }
 
@@ -379,14 +379,14 @@ final class WorkersStorage implements WorkersStorageInterface
             \restore_error_handler();
         }
 
-        if($count === false) {
+        if ($count === false) {
             throw new \RuntimeException('Failed to write MemoryUsage data to shared memory');
         }
     }
 
     public function close(): void
     {
-        if($this->handler !== null && $this->isWrite && $this->workerId === 0) {
+        if ($this->handler !== null && $this->isWrite && $this->workerId === 0) {
             \shmop_delete($this->handler);
         }
     }
@@ -398,11 +398,11 @@ final class WorkersStorage implements WorkersStorageInterface
 
     private function validateWorkerId(int $workerId): void
     {
-        if($workerId <= 0) {
+        if ($workerId <= 0) {
             throw new \InvalidArgumentException('Invalid worker id provided');
         }
 
-        if($this->workersCount !== 0 && $workerId > $this->workersCount) {
+        if ($this->workersCount !== 0 && $workerId > $this->workersCount) {
             throw new \InvalidArgumentException('Worker id is out of range');
         }
     }
@@ -415,7 +415,7 @@ final class WorkersStorage implements WorkersStorageInterface
         $offset                     = $basicOffset + $this->structureSize * ($workerId - 1);
 
         // out of range
-        if($offset >= \shmop_size($this->handler)) {
+        if ($offset >= \shmop_size($this->handler)) {
             throw new \InvalidArgumentException('Worker id is out of range');
         }
 
@@ -429,11 +429,11 @@ final class WorkersStorage implements WorkersStorageInterface
         // $workerOffset + $offset + $this->structureSize
         // the sum of offset and size must be less than or equal to the actual size of the shared memory segment.
 
-        if($workerOffset + $offset + $size > $totalSize) {
+        if ($workerOffset + $offset + $size > $totalSize) {
             $size               = $totalSize - $workerOffset - $offset;
         }
 
-        if($size <= 0) {
+        if ($size <= 0) {
             throw new \RuntimeException('Invalid size of data to read');
         }
 

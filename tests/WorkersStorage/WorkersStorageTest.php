@@ -62,7 +62,7 @@ class WorkersStorageTest extends TestCase
 
         $workerStates               = [];
 
-        for($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $workerState            = $workerStorage->getWorkerState($i);
             $this->fillWorkerState($workerState);
             $workerState->update();
@@ -72,7 +72,7 @@ class WorkersStorageTest extends TestCase
 
         $workerStatesReadOnly       = [];
 
-        foreach($workerStorageReadOnly->foreachWorkers() as $workerState) {
+        foreach ($workerStorageReadOnly->foreachWorkers() as $workerState) {
             $workerStatesReadOnly[] = $workerState;
         }
 

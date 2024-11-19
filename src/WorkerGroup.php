@@ -22,7 +22,7 @@ class WorkerGroup implements WorkerGroupInterface
     {
         foreach ($groupsScheme as $group) {
             foreach ($group->getWorkerStrategies() as $strategy) {
-                if($strategy instanceof WorkerStrategyInterface) {
+                if ($strategy instanceof WorkerStrategyInterface) {
                     $strategy->onStarted();
                 }
             }
@@ -34,7 +34,7 @@ class WorkerGroup implements WorkerGroupInterface
         foreach ($groupsScheme as $group) {
             foreach ($group->getWorkerStrategies() as $strategy) {
 
-                if(false === $strategy instanceof WorkerStrategyInterface) {
+                if (false === $strategy instanceof WorkerStrategyInterface) {
                     continue;
                 }
 
@@ -72,7 +72,7 @@ class WorkerGroup implements WorkerGroupInterface
         ?WorkerStrategyInterface          $autoRestartStrategy = null,
         private int                       $workerGroupId = 0,
     ) {
-        if($autoRestartStrategy !== null) {
+        if ($autoRestartStrategy !== null) {
             $this->addExtraStrategy($autoRestartStrategy);
         }
     }
@@ -149,7 +149,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineGroupName(string $groupName): self
     {
-        if($this->groupName !== '') {
+        if ($this->groupName !== '') {
             throw new \LogicException('Group name is already defined');
         }
 
@@ -160,11 +160,11 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineWorkerGroupId(int $workerGroupId): self
     {
-        if($workerGroupId <= 0) {
+        if ($workerGroupId <= 0) {
             throw new \InvalidArgumentException('Worker group ID must be a positive integer');
         }
 
-        if($this->workerGroupId !== 0) {
+        if ($this->workerGroupId !== 0) {
             throw new \LogicException('Worker group ID is already defined');
         }
 
@@ -175,11 +175,11 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineMaxWorkers(int $maxWorkers): self
     {
-        if($maxWorkers <= 0) {
+        if ($maxWorkers <= 0) {
             throw new \InvalidArgumentException('Max workers must be a positive integer');
         }
 
-        if($this->maxWorkers !== 0) {
+        if ($this->maxWorkers !== 0) {
             throw new \LogicException('Max workers is already defined');
         }
 
@@ -190,7 +190,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineRunnerStrategy(RunnerStrategyInterface $runnerStrategy): self
     {
-        if($this->runnerStrategy !== null) {
+        if ($this->runnerStrategy !== null) {
             throw new \LogicException('Runner strategy is already defined');
         }
 
@@ -201,7 +201,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function definePickupStrategy(PickupStrategyInterface $pickupStrategy): self
     {
-        if($this->pickupStrategy !== null) {
+        if ($this->pickupStrategy !== null) {
             throw new \LogicException('Pickup strategy is already defined');
         }
 
@@ -212,7 +212,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineRestartStrategy(RestartStrategyInterface $restartStrategy): self
     {
-        if($this->restartStrategy !== null) {
+        if ($this->restartStrategy !== null) {
             throw new \LogicException('Restart strategy is already defined');
         }
 
@@ -223,7 +223,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineScalingStrategy(ScalingStrategyInterface $scalingStrategy): self
     {
-        if($this->scalingStrategy !== null) {
+        if ($this->scalingStrategy !== null) {
             throw new \LogicException('Scaling strategy is already defined');
         }
 
@@ -234,7 +234,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineJobExecutor(JobExecutorInterface $jobRunner): self
     {
-        if($this->jobExecutor !== null) {
+        if ($this->jobExecutor !== null) {
             throw new \LogicException('Job runner is already defined');
         }
 
@@ -245,7 +245,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineJobClient(JobClientInterface $jobClient): self
     {
-        if($this->jobClient !== null) {
+        if ($this->jobClient !== null) {
             throw new \LogicException('Job client is already defined');
         }
 
@@ -256,7 +256,7 @@ class WorkerGroup implements WorkerGroupInterface
 
     public function defineSocketStrategy(SocketStrategyInterface $socketStrategy): self
     {
-        if($this->socketStrategy !== null) {
+        if ($this->socketStrategy !== null) {
             throw new \LogicException('Socket strategy is already defined');
         }
 
@@ -269,35 +269,35 @@ class WorkerGroup implements WorkerGroupInterface
     {
         $strategyList               = [];
 
-        if($this->runnerStrategy !== null) {
+        if ($this->runnerStrategy !== null) {
             $strategyList[]         = $this->runnerStrategy;
         }
 
-        if($this->pickupStrategy !== null) {
+        if ($this->pickupStrategy !== null) {
             $strategyList[]         = $this->pickupStrategy;
         }
 
-        if($this->restartStrategy !== null) {
+        if ($this->restartStrategy !== null) {
             $strategyList[]         = $this->restartStrategy;
         }
 
-        if($this->scalingStrategy !== null) {
+        if ($this->scalingStrategy !== null) {
             $strategyList[]         = $this->scalingStrategy;
         }
 
-        if($this->jobExecutor !== null) {
+        if ($this->jobExecutor !== null) {
             $strategyList[]         = $this->jobExecutor;
         }
 
-        if($this->jobClient !== null) {
+        if ($this->jobClient !== null) {
             $strategyList[]         = $this->jobClient;
         }
 
-        if($this->socketStrategy !== null) {
+        if ($this->socketStrategy !== null) {
             $strategyList[]         = $this->socketStrategy;
         }
 
-        if($this->extraStrategies !== []) {
+        if ($this->extraStrategies !== []) {
             $strategyList           = \array_merge($strategyList, $this->extraStrategies);
         }
 

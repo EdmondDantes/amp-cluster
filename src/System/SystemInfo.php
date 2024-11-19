@@ -87,17 +87,17 @@ final class SystemInfo
 
     public static function getProcessMemoryUsage(int $pid): int
     {
-        if(IS_WINDOWS) {
+        if (IS_WINDOWS) {
 
             $info                   = \shell_exec('wmic process where processid='.$pid.' get workingsetsize /format:csv');
 
-            if(empty($info)) {
+            if (empty($info)) {
                 return 0;
             }
 
             $info                   = \explode("\n", \trim($info));
 
-            if(empty($info[1])) {
+            if (empty($info[1])) {
                 return 0;
             }
 
@@ -108,7 +108,7 @@ final class SystemInfo
 
         $info                   = \shell_exec('ps -p '.$pid.' -o rss=');
 
-        if(empty($info)) {
+        if (empty($info)) {
             return 0;
         }
 
@@ -117,11 +117,11 @@ final class SystemInfo
 
     public static function systemStat(bool $isRecalculate = false): array
     {
-        if(self::$instance === null) {
+        if (self::$instance === null) {
             self::$instance         = new self();
         }
 
-        if($isRecalculate) {
+        if ($isRecalculate) {
             self::$instance->isCalculated = false;
         }
 
@@ -143,7 +143,7 @@ final class SystemInfo
 
     public function getTotalMemory(): int
     {
-        if(false === $this->isCalculated) {
+        if (false === $this->isCalculated) {
             $this->calculate();
         }
 
@@ -152,7 +152,7 @@ final class SystemInfo
 
     public function getFreeMemory(): int
     {
-        if(false === $this->isCalculated) {
+        if (false === $this->isCalculated) {
             $this->calculate();
         }
 
@@ -161,7 +161,7 @@ final class SystemInfo
 
     public function getLoadAverage(): float
     {
-        if(false === $this->isCalculated) {
+        if (false === $this->isCalculated) {
             $this->calculate();
         }
 
@@ -172,7 +172,7 @@ final class SystemInfo
     {
         $this->isCalculated         = true;
 
-        if(PHP_OS_FAMILY === 'Windows') {
+        if (PHP_OS_FAMILY === 'Windows') {
             $this->defineWindowsMemoryUsage();
             $this->defineWindowsCPULoad();
         } else {
@@ -200,13 +200,13 @@ final class SystemInfo
 
                     $value          = (int) (\explode(' ', \trim($statLineData[1]))[0]) * 1024;
 
-                    if(\trim($statLineData[0]) === 'MemTotal') {
+                    if (\trim($statLineData[0]) === 'MemTotal') {
                         $this->memoryTotal = $value;
                     } else {
                         $this->memoryFree  = $value;
                     }
 
-                    if($this->memoryFree !== null && $this->memoryTotal !== null) {
+                    if ($this->memoryFree !== null && $this->memoryTotal !== null) {
                         break;
                     }
                 }
@@ -226,7 +226,7 @@ final class SystemInfo
         if ($output !== false) {
             $output             = \explode("\n", $output);
 
-            if(!empty($output[1])) {
+            if (!empty($output[1])) {
                 $this->memoryTotal = (int) \trim($output[1]);
             }
         }
@@ -237,16 +237,16 @@ final class SystemInfo
         if ($output !== false) {
             $output             = \explode("\n", $output);
 
-            if(!empty($output[1])) {
+            if (!empty($output[1])) {
                 $this->memoryFree = (int) \trim($output[1]) * 1024;
             }
         }
 
-        if($this->memoryTotal === null) {
+        if ($this->memoryTotal === null) {
             $this->memoryTotal  = 0;
         }
 
-        if($this->memoryFree === null) {
+        if ($this->memoryFree === null) {
             $this->memoryFree   = 0;
         }
     }
@@ -255,11 +255,11 @@ final class SystemInfo
     {
         $output                     = \shell_exec('uptime');
 
-        if(empty($output)) {
+        if (empty($output)) {
             return;
         }
 
-        if(\preg_match('/load average: (?<load>[\d.]+)/i', $output, $m)) {
+        if (\preg_match('/load average: (?<load>[\d.]+)/i', $output, $m)) {
             $this->loadAverage      = (float) $m['load'];
         }
     }
@@ -268,7 +268,7 @@ final class SystemInfo
     {
         $output                     = \shell_exec('wmic cpu get loadpercentage /all');
 
-        if(empty($output)) {
+        if (empty($output)) {
             return;
         }
 

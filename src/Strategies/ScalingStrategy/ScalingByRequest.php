@@ -22,18 +22,18 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
     {
         $workerGroup                = $this->getWorkerGroup();
 
-        if($workerGroup === null) {
+        if ($workerGroup === null) {
             return false;
         }
 
         [$lowestWorkerId, $highestWorkerId] = $this->getMinMaxWorkers($workerGroup->getWorkerGroupId());
 
-        if(($highestWorkerId - $lowestWorkerId) >= $workerGroup->getMaxWorkers()) {
+        if (($highestWorkerId - $lowestWorkerId) >= $workerGroup->getMaxWorkers()) {
             return false;
         }
 
         // For watcher process, try to scale immediately
-        if($this->getWorkerPool() !== null) {
+        if ($this->getWorkerPool() !== null) {
             $this->tryToScale();
             return true;
         }
@@ -48,7 +48,7 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
     {
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool !== null) {
+        if ($workerPool !== null) {
 
             $self                   = \WeakReference::create($this);
 
@@ -65,14 +65,14 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
 
     public function onStopped(): void
     {
-        if($this->decreaseCallbackId !== '') {
+        if ($this->decreaseCallbackId !== '') {
             EventLoop::cancel($this->decreaseCallbackId);
         }
     }
 
     public function __destruct()
     {
-        if($this->decreaseCallbackId !== '') {
+        if ($this->decreaseCallbackId !== '') {
             EventLoop::cancel($this->decreaseCallbackId);
         }
     }
@@ -83,10 +83,10 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
         $maxWorkerId                = 0;
 
         foreach ($this->getWorkersStorage()->foreachWorkers() as $workerState) {
-            if($workerState->getGroupId() === $groupId && $workerState->isShouldBeStarted()) {
-                if($minWorkerId === 0) {
+            if ($workerState->getGroupId() === $groupId && $workerState->isShouldBeStarted()) {
+                if ($minWorkerId === 0) {
                     $minWorkerId = $workerState->getWorkerId();
-                } elseif($maxWorkerId === 0) {
+                } elseif ($maxWorkerId === 0) {
                     $maxWorkerId = $workerState->getWorkerId();
                 } elseif ($maxWorkerId < $workerState->getWorkerId()) {
                     $maxWorkerId = $workerState->getWorkerId();
@@ -99,11 +99,11 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
 
     private function handleScalingRequest(mixed $message, int $workerId = 0): void
     {
-        if($message instanceof ScalingRequest === false) {
+        if ($message instanceof ScalingRequest === false) {
             return;
         }
 
-        if($this->getWorkerGroup()?->getWorkerGroupId() === $message->toGroupId) {
+        if ($this->getWorkerGroup()?->getWorkerGroupId() === $message->toGroupId) {
             $this->tryToScale();
         }
     }
@@ -112,7 +112,7 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
     {
         $workerGroup                = $this->getWorkerGroup();
 
-        if($workerGroup === null) {
+        if ($workerGroup === null) {
             return;
         }
 
@@ -120,7 +120,7 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
 
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool === null) {
+        if ($workerPool === null) {
             return;
         }
 
@@ -131,17 +131,17 @@ final class ScalingByRequest extends WorkerStrategyAbstract implements ScalingSt
     {
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool === null) {
+        if ($workerPool === null) {
             return;
         }
 
-        if(($this->lastScalingRequest + $this->decreaseTimeout) >= \time()) {
+        if (($this->lastScalingRequest + $this->decreaseTimeout) >= \time()) {
             return;
         }
 
         $runningWorkers             = $workerPool->countWorkers($this->getWorkerGroup()?->getWorkerGroupId(), onlyRunning: true);
 
-        if($runningWorkers <= $this->getWorkerGroup()->getMinWorkers()) {
+        if ($runningWorkers <= $this->getWorkerGroup()->getMinWorkers()) {
             return;
         }
 

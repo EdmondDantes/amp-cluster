@@ -11,7 +11,7 @@ final class RestartTwice implements RestartStrategyInterface
 
     public function shouldRestart(mixed $exitResult): int
     {
-        if($this->restarts >= 2) {
+        if ($this->restarts >= 2) {
             return -1;
         }
 

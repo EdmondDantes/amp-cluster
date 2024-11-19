@@ -258,11 +258,11 @@ class WorkerPoolTest extends TestCase
         } catch (\Throwable $exception) {
         }
 
-        if($exception !== null) {
+        if ($exception !== null) {
             $this->assertInstanceOf(FatalWorkerException::class, $exception);
         }
 
-        if($exception === null) {
+        if ($exception === null) {
             $this->assertInstanceOf(ChannelException::class, $restartStrategy->lastError);
         }
     }

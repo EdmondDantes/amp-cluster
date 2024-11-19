@@ -35,13 +35,13 @@ class ApplicationState implements ApplicationStateInterface
 
     public function update(): void
     {
-        if($this->isReadOnly) {
+        if ($this->isReadOnly) {
             throw new \RuntimeException('The ApplicationState is read-only');
         }
 
         $storage                    = $this->getStorage();
 
-        if($storage === null) {
+        if ($storage === null) {
             return;
         }
 
@@ -63,7 +63,7 @@ class ApplicationState implements ApplicationStateInterface
 
     protected function load(): void
     {
-        if($this->isLoaded) {
+        if ($this->isLoaded) {
             return;
         }
 
@@ -71,17 +71,17 @@ class ApplicationState implements ApplicationStateInterface
 
         $storage                    = $this->getStorage();
 
-        if($storage === null) {
+        if ($storage === null) {
             return;
         }
 
         $data                       = \unpack('Q*', $storage->readApplicationState());
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read application state');
         }
 
-        if(\count($data) < static::ITEM_COUNT) {
+        if (\count($data) < static::ITEM_COUNT) {
             throw new \RuntimeException('Invalid application state data');
         }
 

@@ -67,7 +67,7 @@ final class ServerSocketPipeProvider
 
                 $uri                = (string) $address;
 
-                if(self::isUsed($uri, $this->workerId)) {
+                if (self::isUsed($uri, $this->workerId)) {
                     throw new SocketException("Socket address '$uri' already in use inside worker {$this->workerId}");
                 }
 
@@ -88,7 +88,7 @@ final class ServerSocketPipeProvider
     private static function isUsed(string $uri, int $workerId): bool
     {
         foreach (self::$usedBy as $usedUri => $workers) {
-            if($uri === $usedUri && \in_array($workerId, $workers, true)) {
+            if ($uri === $usedUri && \in_array($workerId, $workers, true)) {
                 return true;
             }
         }
@@ -103,11 +103,11 @@ final class ServerSocketPipeProvider
 
     private static function freeAddress(string $uri, int $workerId): void
     {
-        if(\array_key_exists($uri, self::$usedBy) === false) {
+        if (\array_key_exists($uri, self::$usedBy) === false) {
             return;
         }
 
-        if(($key = \array_search($workerId, self::$usedBy[$uri], true)) !== false) {
+        if (($key = \array_search($workerId, self::$usedBy[$uri], true)) !== false) {
             unset(self::$usedBy[$uri][$key]);
         }
     }
@@ -115,7 +115,7 @@ final class ServerSocketPipeProvider
     private static function freeWorker(int $workerId): void
     {
         foreach (self::$usedBy as $uri => $workers) {
-            if(($key = \array_search($workerId, $workers, true)) !== false) {
+            if (($key = \array_search($workerId, $workers, true)) !== false) {
                 unset(self::$usedBy[$uri][$key]);
             }
         }
@@ -127,7 +127,7 @@ final class ServerSocketPipeProvider
     {
         foreach (self::$usedBy as $uri => $workers) {
 
-            if(empty($workers) && isset(self::$servers[$uri])) {
+            if (empty($workers) && isset(self::$servers[$uri])) {
                 \fclose(self::$servers[$uri]);
                 unset(self::$servers[$uri], self::$usedBy[$uri]);
 
@@ -135,7 +135,7 @@ final class ServerSocketPipeProvider
         }
 
         foreach (self::$servers as $uri => $server) {
-            if(empty(self::$usedBy[$uri])) {
+            if (empty(self::$usedBy[$uri])) {
                 \fclose($server);
                 unset(self::$servers[$uri]);
             }

@@ -42,7 +42,7 @@ class PrometheusService implements WorkerEntryPointInterface
 
         $workerGroup                = $worker->getWorkerGroup();
 
-        if($workerGroup instanceof PrometheusGroup === false) {
+        if ($workerGroup instanceof PrometheusGroup === false) {
             throw new FatalWorkerException('The worker group must be an instance of PrometheusGroup');
         }
 

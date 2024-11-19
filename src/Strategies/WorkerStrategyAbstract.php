@@ -27,7 +27,7 @@ abstract class WorkerStrategyAbstract implements WorkerStrategyInterface
 
     public function getSelfWorker(): WorkerInterface|null
     {
-        if($this->isSelfWorker()) {
+        if ($this->isSelfWorker()) {
             return $this->getWorker();
         }
 
@@ -77,11 +77,11 @@ abstract class WorkerStrategyAbstract implements WorkerStrategyInterface
 
     protected function getGroupsScheme(): array
     {
-        if($this->worker?->get() !== null) {
+        if ($this->worker?->get() !== null) {
             return $this->worker->get()->getGroupsScheme();
         }
 
-        if($this->workerPool?->get() !== null) {
+        if ($this->workerPool?->get() !== null) {
             return $this->workerPool->get()->getGroupsScheme();
         }
 
@@ -90,11 +90,11 @@ abstract class WorkerStrategyAbstract implements WorkerStrategyInterface
 
     protected function getWorkersStorage(): ?WorkersStorageInterface
     {
-        if($this->workerPool?->get() !== null) {
+        if ($this->workerPool?->get() !== null) {
             return $this->workerPool->get()->getWorkersStorage();
         }
 
-        if($this->worker?->get() !== null) {
+        if ($this->worker?->get() !== null) {
             return $this->worker->get()->getWorkersStorage();
         }
 
@@ -103,7 +103,7 @@ abstract class WorkerStrategyAbstract implements WorkerStrategyInterface
 
     protected function getCurrentWorkerId(): ?int
     {
-        if($this->worker?->get() !== null) {
+        if ($this->worker?->get() !== null) {
             return $this->worker->get()->getWorkerId();
         }
 

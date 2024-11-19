@@ -30,7 +30,7 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
 
     public function defineJobHandler(JobHandlerInterface $handler): void
     {
-        if($this->handler !== null) {
+        if ($this->handler !== null) {
             throw new FatalWorkerException('Job handler is already defined');
         }
 
@@ -41,11 +41,11 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
     {
         $worker                     = $this->getSelfWorker();
 
-        if(null === $worker) {
+        if (null === $worker) {
             return;
         }
 
-        if($this->handler === null) {
+        if ($this->handler === null) {
             throw new FatalWorkerException('Job handler is not defined before starting the Worker. '
                                            .'Please use $worker->group->getJobExecutor()->defineJobHandler() method before starting the Worker.');
         }
@@ -54,7 +54,7 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
         $workerState                = $worker->getWorkerState();
 
         $worker->defineSoftShutdownHandler(static function () use ($jobLoopCancellation, $worker, $workerState) {
-            if(false === $jobLoopCancellation->isCancelled()) {
+            if (false === $jobLoopCancellation->isCancelled()) {
                 $jobLoopCancellation->cancel();
             }
 
@@ -69,7 +69,7 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
 
         $this->initIpcServer();
 
-        if($this->jobIpc === null) {
+        if ($this->jobIpc === null) {
             throw new FatalWorkerException('IPC Server is not initialized');
         }
 
@@ -102,11 +102,11 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
 
                 [$channel, $jobRequest] = $jobQueueIterator->getValue();
 
-                if($jobRequest === null) {
+                if ($jobRequest === null) {
                     continue;
                 }
 
-                if(false === $jobRequest instanceof JobRequestInterface) {
+                if (false === $jobRequest instanceof JobRequestInterface) {
                     $this->logger?->error('Invalid job request object', ['jobRequestType' => \get_debug_type($jobRequest)]);
                     continue;
                 }
@@ -131,7 +131,7 @@ abstract class JobExecutorAbstract extends WorkerStrategyAbstract implements Job
                     $selfRef->get()?->jobIpc?->sendJobResult($result, $channel, $jobRequest, $cancellation);
                 });
 
-                if(false === $this->canAcceptMoreJobs()) {
+                if (false === $this->canAcceptMoreJobs()) {
 
                     // If the Worker is busy, we will wait for the job to complete
                     $this->workerState->jobEnqueued($jobRequest->getWeight(), false);

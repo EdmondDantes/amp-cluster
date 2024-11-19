@@ -26,7 +26,7 @@ final class JobSerializer implements JobSerializerInterface
 
         $buffer                     = \unpack('V*', \substr($request, 0, self::REQUEST_HEADER_LENGTH));
 
-        if(false === $buffer || \count($buffer) !== self::REQUEST_HEADER_ITEMS) {
+        if (false === $buffer || \count($buffer) !== self::REQUEST_HEADER_ITEMS) {
             throw new \RuntimeException('Failed to unpack data for request');
         }
 
@@ -40,9 +40,9 @@ final class JobSerializer implements JobSerializerInterface
     {
         $isException                = $data instanceof \Throwable ? 1 : 0;
 
-        if($data instanceof \Throwable) {
+        if ($data instanceof \Throwable) {
 
-            if(false === $data instanceof RemoteException) {
+            if (false === $data instanceof RemoteException) {
                 $data               = new RemoteException($data->getMessage(), 0, $data);
             }
 
@@ -61,7 +61,7 @@ final class JobSerializer implements JobSerializerInterface
 
         $buffer                     = \unpack('V*', \substr($response, 0, self::RESPONSE_HEADER_LENGTH));
 
-        if(false === $buffer || \count($buffer) !== self::RESPONSE_HEADER_ITEMS) {
+        if (false === $buffer || \count($buffer) !== self::RESPONSE_HEADER_ITEMS) {
             throw new \RuntimeException('Failed to unpack data for response');
         }
 
@@ -70,11 +70,11 @@ final class JobSerializer implements JobSerializerInterface
         $data                       = \substr($response, self::RESPONSE_HEADER_LENGTH);
         $exception                  = null;
 
-        if($isError) {
+        if ($isError) {
             $exception              = \unserialize($data);
             $data                   = '';
 
-            if(false === $exception) {
+            if (false === $exception) {
                 $exception          = new RemoteException('Failed to unserialize response data');
             }
         }

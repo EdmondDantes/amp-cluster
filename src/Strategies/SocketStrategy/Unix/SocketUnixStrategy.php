@@ -34,7 +34,7 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
     {
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool !== null) {
+        if ($workerPool !== null) {
 
             $self                   = \WeakReference::create($this);
 
@@ -48,7 +48,7 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
 
         $worker                     = $this->getSelfWorker();
 
-        if($worker === null) {
+        if ($worker === null) {
             return;
         }
 
@@ -71,12 +71,12 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
 
     public function onStopped(): void
     {
-        if(false === $this->deferredFuture?->isComplete()) {
+        if (false === $this->deferredFuture?->isComplete()) {
             $this->deferredFuture->complete();
             $this->deferredFuture   = null;
         }
 
-        if($this->workerEventHandler !== null) {
+        if ($this->workerEventHandler !== null) {
             $this->getSelfWorker()?->getWorkerEventEmitter()->removeWorkerEventListener($this->workerEventHandler);
             $this->workerEventHandler = null;
         }
@@ -98,11 +98,11 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
      */
     public function getServerSocketFactory(): ServerSocketFactory|null
     {
-        if($this->socketPipeFactory !== null) {
+        if ($this->socketPipeFactory !== null) {
             return $this->socketPipeFactory;
         }
 
-        if($this->deferredFuture === null) {
+        if ($this->deferredFuture === null) {
             throw new \Error('Wrong usage of the method getServerSocketFactory(). The deferredFuture undefined.');
         }
 
@@ -115,14 +115,14 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
     {
         $worker                     = $this->getSelfWorker();
 
-        if($worker === null) {
+        if ($worker === null) {
             throw new \Error('Wrong usage of the method getServerSocketFactory(). This method can be used only inside the worker!');
         }
 
         try {
             $socket                 = Ipc\connect($this->uri, $this->key, new TimeoutCancellation($this->ipcTimeout));
 
-            if($socket instanceof ResourceSocket) {
+            if ($socket instanceof ResourceSocket) {
                 return $socket;
             }
 
@@ -135,7 +135,7 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
 
     private function handleMessage(mixed $message, int $workerId = 0): void
     {
-        if($this->isSelfWorker()) {
+        if ($this->isSelfWorker()) {
             $this->workerHandler($message);
         } elseif ($this->getWorkerPool() !== null) {
             $this->watcherHandler($message);
@@ -144,16 +144,16 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
 
     private function workerHandler(mixed $message): void
     {
-        if(false === $message instanceof SocketTransferInfo) {
+        if (false === $message instanceof SocketTransferInfo) {
             return;
         }
 
-        if($this->workerEventHandler !== null) {
+        if ($this->workerEventHandler !== null) {
             $this->getSelfWorker()?->getWorkerEventEmitter()->removeWorkerEventListener($this->workerEventHandler);
             $this->workerEventHandler = null;
         }
 
-        if($this->deferredFuture === null || $this->deferredFuture->isComplete()) {
+        if ($this->deferredFuture === null || $this->deferredFuture->isComplete()) {
             return;
         }
 
@@ -168,21 +168,21 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
     {
         $workerPool             = $this->getWorkerPool();
 
-        if($workerPool === null) {
+        if ($workerPool === null) {
             return;
         }
 
-        if(false === $message instanceof InitiateSocketTransfer) {
+        if (false === $message instanceof InitiateSocketTransfer) {
             return;
         }
 
-        if($message->groupId !== $this->getWorkerGroup()?->getWorkerGroupId()) {
+        if ($message->groupId !== $this->getWorkerGroup()?->getWorkerGroupId()) {
             return;
         }
 
         $workerContext              = $workerPool->findWorkerContext($message->workerId);
 
-        if($workerContext === null) {
+        if ($workerContext === null) {
             return;
         }
 
@@ -196,7 +196,7 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
 
             $workerContext->send(new SocketTransferInfo($ipcKey, $ipcHub->getUri()));
 
-            if(\array_key_exists($message->workerId, $this->workerSocketProviders)) {
+            if (\array_key_exists($message->workerId, $this->workerSocketProviders)) {
                 $this->workerSocketProviders[$message->workerId]->stop();
             }
 
@@ -205,7 +205,7 @@ final class SocketUnixStrategy extends WorkerStrategyAbstract implements SocketS
             $socketPipeProvider->start();
 
         } catch (\Throwable $exception) {
-            if(\array_key_exists($message->workerId, $this->workerSocketProviders)) {
+            if (\array_key_exists($message->workerId, $this->workerSocketProviders)) {
                 $this->workerSocketProviders[$message->workerId]->stop();
                 unset($this->workerSocketProviders[$message->workerId]);
             }

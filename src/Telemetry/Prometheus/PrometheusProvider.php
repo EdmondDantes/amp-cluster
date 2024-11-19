@@ -40,7 +40,7 @@ final class PrometheusProvider
         $workers                    = $this->workersStorage->foreachWorkers();
 
         foreach ($workers as $worker) {
-            if($worker->getGroupId() === 0) {
+            if ($worker->getGroupId() === 0) {
                 $worker->setGroupId($this->findGroupId($worker->getWorkerId()));
             }
         }
@@ -57,7 +57,7 @@ final class PrometheusProvider
             $minWorkerId            = $maxWorkerId + 1;
             $maxWorkerId            = $minWorkerId + $group->getMaxWorkers();
 
-            if($minWorkerId <= $workerId && $workerId <= $maxWorkerId) {
+            if ($minWorkerId <= $workerId && $workerId <= $maxWorkerId) {
                 return $group->getWorkerGroupId();
             }
         }
@@ -237,11 +237,11 @@ final class PrometheusProvider
 
         foreach ($workers as $worker) {
 
-            if(\array_key_exists($worker->getGroupId(), $runningWorkers) === false) {
+            if (\array_key_exists($worker->getGroupId(), $runningWorkers) === false) {
                 $runningWorkers[$worker->getGroupId()] = 0;
             }
 
-            if($worker->getPid() !== 0) {
+            if ($worker->getPid() !== 0) {
                 $runningWorkers[$worker->getGroupId()]++;
             }
         }
@@ -272,11 +272,11 @@ final class PrometheusProvider
 
         foreach ($workers as $worker) {
 
-            if(\array_key_exists($worker->getGroupId(), $shouldBeStarted) === false) {
+            if (\array_key_exists($worker->getGroupId(), $shouldBeStarted) === false) {
                 $shouldBeStarted[$worker->getGroupId()] = 0;
             }
 
-            if($worker->isShouldBeStarted()) {
+            if ($worker->isShouldBeStarted()) {
                 $shouldBeStarted[$worker->getGroupId()]++;
             }
         }

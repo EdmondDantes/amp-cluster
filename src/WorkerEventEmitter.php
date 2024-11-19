@@ -9,7 +9,7 @@ final class WorkerEventEmitter implements WorkerEventEmitterInterface
 
     public function addWorkerEventListener(callable $listener): void
     {
-        if($listener instanceof EventWeakHandler) {
+        if ($listener instanceof EventWeakHandler) {
             $listener->defineEventEmitter($this);
         }
 

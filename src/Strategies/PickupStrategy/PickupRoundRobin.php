@@ -25,13 +25,13 @@ final class PickupRoundRobin extends PickupStrategyAbstract
 
             $anyFound               = true;
 
-            if(false === \in_array($workerState->getWorkerId(), $this->usedWorkers, true)) {
+            if (false === \in_array($workerState->getWorkerId(), $this->usedWorkers, true)) {
                 $this->usedWorkers[] = $workerState->getWorkerId();
                 return $workerState->getWorkerId();
             }
         }
 
-        if(false === $anyFound) {
+        if (false === $anyFound) {
             return null;
         }
 

@@ -31,11 +31,11 @@ class WorkerTelemetryCollector implements ConnectionCollectorInterface, JobColle
         } catch (\Throwable $exception) {
             $this->errorsCount++;
 
-            if($this->firstErrorAt === 0) {
+            if ($this->firstErrorAt === 0) {
                 $this->firstErrorAt = \time();
             }
 
-            if($this->errorsCount <= 1 || \time() - $this->firstErrorAt > $this->errorsTimeout) {
+            if ($this->errorsCount <= 1 || \time() - $this->firstErrorAt > $this->errorsTimeout) {
                 $this->logger?->error(
                     'Telemetry error: '.$exception->getMessage(),
                     ['file' => $exception->getFile(), 'line' => $exception->getLine(), 'trace' => $exception->getTraceAsString()]
@@ -62,7 +62,7 @@ class WorkerTelemetryCollector implements ConnectionCollectorInterface, JobColle
         $this->workerState->decrementConnectionsProcessing();
         $this->workerState->incrementConnectionsProcessed();
 
-        if($withError) {
+        if ($withError) {
             $this->workerState->incrementConnectionsErrors();
         }
     }
@@ -107,7 +107,7 @@ class WorkerTelemetryCollector implements ConnectionCollectorInterface, JobColle
         $this->workerState->decrementJobProcessing();
         $this->workerState->incrementJobProcessed();
 
-        if($withError) {
+        if ($withError) {
             $this->workerState->incrementJobErrors();
         }
     }

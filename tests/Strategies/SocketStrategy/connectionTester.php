@@ -8,7 +8,7 @@ return function (Channel $channel): void {
     $address                        = $channel->receive(new \Amp\TimeoutCancellation(5));
     $result                         = file_get_contents($address);
 
-    if($result === false) {
+    if ($result === false) {
         $channel->send('Failed to get content');
     }
 

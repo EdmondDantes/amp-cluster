@@ -445,7 +445,7 @@ class WorkerState implements WorkerStateInterface
 
         $now                        = \time();
 
-        if($this->firstStartedAt === 0) {
+        if ($this->firstStartedAt === 0) {
             $this->firstStartedAt   = $now;
         }
 
@@ -498,18 +498,18 @@ class WorkerState implements WorkerStateInterface
     {
         $data                       = $this->getStorage()?->readWorkerState($this->workerId);
 
-        if($data === null) {
+        if ($data === null) {
             return $this;
         }
 
         $data                       = \unpack('Q*', $data);
 
-        if(false === $data) {
+        if (false === $data) {
             throw new \RuntimeException('Failed to read worker state');
         }
 
         // Ignore empty data
-        if(\count($data) === 0) {
+        if (\count($data) === 0) {
             return $this;
         }
 
@@ -678,11 +678,11 @@ class WorkerState implements WorkerStateInterface
     {
         $unpackedItem               = \unpack('Q*', $packedItem);
 
-        if(false === $unpackedItem) {
+        if (false === $unpackedItem) {
             throw new \RuntimeException('Failed to unpack worker state');
         }
 
-        if(empty($unpackedItem[1])) {
+        if (empty($unpackedItem[1])) {
             $unpackedItem[1]        = $workerId;
         }
 
@@ -786,7 +786,7 @@ class WorkerState implements WorkerStateInterface
 
     protected function checkReviewOnly(): void
     {
-        if($this->reviewOnly) {
+        if ($this->reviewOnly) {
             throw new \RuntimeException('Worker state review only is enabled');
         }
     }

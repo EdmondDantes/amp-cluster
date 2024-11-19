@@ -33,20 +33,20 @@ class PickupByWeight extends PickupStrategyAbstract
 
         foreach ($this->iterate($possibleGroups, $possibleWorkers, $ignoredWorkers) as $workerState) {
 
-            if($workerState->isReady() === false) {
+            if ($workerState->isReady() === false) {
                 continue;
             }
 
             // If the worker's weight is greater than the limit and $tryCount === 0, we ignore it.
-            if($this->ignoreWeightLimit > 0 && $workerState->getWeight() > $this->ignoreWeightLimit && $tryCount === 0) {
+            if ($this->ignoreWeightLimit > 0 && $workerState->getWeight() > $this->ignoreWeightLimit && $tryCount === 0) {
                 continue;
             }
 
-            if($workerState->getWeight() === 0 || $workerState->getJobProcessing() === 0) {
+            if ($workerState->getWeight() === 0 || $workerState->getJobProcessing() === 0) {
                 return $workerState->getWorkerId();
             }
 
-            if($workerState->getWeight() < $minimalWeight) {
+            if ($workerState->getWeight() < $minimalWeight) {
                 $minimalWeight      = $workerState->getWeight();
                 $foundWorkerId      = $workerState->getWorkerId();
             }

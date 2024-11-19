@@ -21,8 +21,8 @@ final class RequestHandler implements \Amp\Http\Server\RequestHandler
         try {
             $response               = ($this->closure)($request);
 
-            if($response instanceof Response) {
-                if($response->getStatus() >= 200 && $response->getStatus() < 400) {
+            if ($response instanceof Response) {
+                if ($response->getStatus() >= 200 && $response->getStatus() < 400) {
                     $this->collector->connectionUnProcessing();
                 } else {
                     $this->collector->connectionUnProcessing(true);

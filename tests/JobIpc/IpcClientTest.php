@@ -85,18 +85,18 @@ class IpcClientTest extends TestCase
             while ($iterator->continue($abortCancellation)) {
                 [$channel, $request]= $iterator->getValue();
 
-                if($request === null) {
+                if ($request === null) {
                     break;
                 }
 
-                if(false === $request instanceof JobRequestInterface) {
+                if (false === $request instanceof JobRequestInterface) {
                     throw new \RuntimeException('Invalid request');
                 }
 
-                if(\is_callable($this->jobHandler)) {
+                if (\is_callable($this->jobHandler)) {
                     $response       = \call_user_func($this->jobHandler, $request);
 
-                    if($request->getJobId() !== 0) {
+                    if ($request->getJobId() !== 0) {
                         $channel->send(
                             $this->jobSerializer->createResponse(
                                 $request->getJobId(),

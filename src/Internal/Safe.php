@@ -18,7 +18,7 @@ final class Safe
         \set_error_handler(
             function ($severity, $message) use (&$error, $throwConstructor) {
 
-                if($throwConstructor !== null) {
+                if ($throwConstructor !== null) {
                     $error          = \call_user_func($throwConstructor, $message, $severity);
                 } else {
                     $error          = new \Error($message);
@@ -32,7 +32,7 @@ final class Safe
             \restore_error_handler();
         }
 
-        if($error !== null) {
+        if ($error !== null) {
             throw $error;
         }
 

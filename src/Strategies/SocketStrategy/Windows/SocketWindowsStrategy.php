@@ -14,13 +14,13 @@ final class SocketWindowsStrategy extends WorkerStrategyAbstract implements Sock
 
     public function getServerSocketFactory(): ServerSocketFactory|null
     {
-        if($this->socketPipeFactory !== null) {
+        if ($this->socketPipeFactory !== null) {
             return $this->socketPipeFactory;
         }
 
         $worker                     = $this->getSelfWorker();
 
-        if($worker === null) {
+        if ($worker === null) {
             throw new \Error('Wrong usage of the method getServerSocketFactory(). This method can be used only inside the worker!');
         }
 
@@ -33,7 +33,7 @@ final class SocketWindowsStrategy extends WorkerStrategyAbstract implements Sock
     {
         $workerPool                 = $this->getWorkerPool();
 
-        if($workerPool === null) {
+        if ($workerPool === null) {
             return;
         }
 

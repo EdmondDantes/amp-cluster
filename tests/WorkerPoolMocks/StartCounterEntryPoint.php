@@ -21,11 +21,11 @@ final class StartCounterEntryPoint implements WorkerEntryPointInterface
     {
         $file                       = self::getFile();
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             \unlink($file);
         }
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             throw new \RuntimeException('Could not remove file: ' . $file);
         }
     }
@@ -41,10 +41,10 @@ final class StartCounterEntryPoint implements WorkerEntryPointInterface
     {
         $fh                         = \fopen(self::getFile(), 'c+');
 
-        if(\flock($fh, LOCK_EX)) {
+        if (\flock($fh, LOCK_EX)) {
             $content                = \fread($fh, 4);
 
-            if(false === $content || $content === '') {
+            if (false === $content || $content === '') {
                 $content            = 1;
             } else {
                 $content            = (int) $content + 1;

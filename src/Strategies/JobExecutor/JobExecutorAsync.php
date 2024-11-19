@@ -48,7 +48,7 @@ final class JobExecutorAsync extends JobExecutorAbstract
 
             $handler                = $handler->get();
 
-            if($handler instanceof JobHandlerInterface) {
+            if ($handler instanceof JobHandlerInterface) {
                 return $handler->handleJob($data, null, $cancellation);
             }
 
@@ -65,7 +65,7 @@ final class JobExecutorAsync extends JobExecutorAbstract
 
             $self                   = $self->get();
 
-            if($self === null) {
+            if ($self === null) {
                 return;
             }
 
@@ -73,7 +73,7 @@ final class JobExecutorAsync extends JobExecutorAbstract
 
             $index                  = \array_search($future, $self->jobFutures, true);
 
-            if($index !== false) {
+            if ($index !== false) {
                 unset($self->jobFutures[$index]);
             }
         });
@@ -93,7 +93,7 @@ final class JobExecutorAsync extends JobExecutorAbstract
 
     public function awaitAll(?Cancellation $cancellation = null): void
     {
-        if($cancellation === null && $this->maxAwaitAllTimeout > 0) {
+        if ($cancellation === null && $this->maxAwaitAllTimeout > 0) {
             $cancellation           = new TimeoutCancellation(
                 $this->maxAwaitAllTimeout,
                 'JobRunnerAsync::awaitAll() timed out: '.$this->maxAwaitAllTimeout.'s'

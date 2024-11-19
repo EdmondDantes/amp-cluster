@@ -27,13 +27,13 @@ class MemoryUsage implements MemoryUsageInterface
 
     protected function load(): void
     {
-        if($this->isLoaded) {
+        if ($this->isLoaded) {
             return;
         }
 
         $storage                    = $this->getStorage();
 
-        if($storage === null) {
+        if ($storage === null) {
             return;
         }
 
@@ -41,15 +41,15 @@ class MemoryUsage implements MemoryUsageInterface
 
         $data                       = \unpack('Q*', $data);
 
-        if($data === false) {
+        if ($data === false) {
             throw new \RuntimeException('Failed to read MemoryUsage data');
         }
 
-        if(\count($data) < $this->workersCount) {
+        if (\count($data) < $this->workersCount) {
             throw new \RuntimeException('Invalid MemoryUsage data size');
         }
 
-        for($i = 1; $i <= $this->workersCount; $i++) {
+        for ($i = 1; $i <= $this->workersCount; $i++) {
             $this->stats[$i]        = $data[$i];
         }
 
@@ -58,13 +58,13 @@ class MemoryUsage implements MemoryUsageInterface
 
     public function update(): void
     {
-        if($this->isReadOnly) {
+        if ($this->isReadOnly) {
             throw new \RuntimeException('MemoryUsage is read-only');
         }
 
         $storage                    = $this->getStorage();
 
-        if($storage === null) {
+        if ($storage === null) {
             return;
         }
 
@@ -86,24 +86,24 @@ class MemoryUsage implements MemoryUsageInterface
     {
         $storage                    = $this->getStorage();
 
-        if($storage === null) {
+        if ($storage === null) {
             return [];
         }
 
         $data                       = $storage->readMemoryUsage();
 
-        if($data === '') {
+        if ($data === '') {
             return [];
         }
 
         $result                     = [];
         $data                       = \unpack('Q*', $data);
 
-        if(\count($data) !== $this->workersCount) {
+        if (\count($data) !== $this->workersCount) {
             throw new \RuntimeException('Invalid MemoryUsageStat data size');
         }
 
-        for($i = 1; $i <= $this->workersCount; $i++) {
+        for ($i = 1; $i <= $this->workersCount; $i++) {
             $result[$i]             = $data[$i];
         }
 
@@ -112,7 +112,7 @@ class MemoryUsage implements MemoryUsageInterface
 
     public function getWorkersMemoryUsage(int $workerId): int
     {
-        if(false === $this->isLoaded) {
+        if (false === $this->isLoaded) {
             $this->load();
         }
 
@@ -121,7 +121,7 @@ class MemoryUsage implements MemoryUsageInterface
 
     public function setStats(array $stats): static
     {
-        if($this->isReadOnly) {
+        if ($this->isReadOnly) {
             throw new \RuntimeException('MemoryUsage is read-only');
         }
 

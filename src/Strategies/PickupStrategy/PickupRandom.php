@@ -20,7 +20,7 @@ final class PickupRandom extends PickupStrategyAbstract
     ): ?int {
         $pool                       = \iterator_to_array($this->iterate($possibleGroups, $possibleWorkers, $ignoredWorkers));
 
-        if($pool === []) {
+        if ($pool === []) {
             return null;
         }
 

@@ -25,7 +25,7 @@ class MemoryUsageTest extends TestCase
     {
         $stats                      = [];
 
-        for($workerId = 1; $workerId <= 5; $workerId++) {
+        for ($workerId = 1; $workerId <= 5; $workerId++) {
             $stats[$workerId]       = \rand(0, 1000);
         }
 

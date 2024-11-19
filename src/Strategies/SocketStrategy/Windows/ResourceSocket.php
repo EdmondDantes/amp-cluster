@@ -130,7 +130,7 @@ final class ResourceSocket implements Socket, ResourceStream, \IteratorAggregate
 
     public function read(?Cancellation $cancellation = null, ?int $limit = null): ?string
     {
-        if($cancellation !== null) {
+        if ($cancellation !== null) {
             $cancellation = new CompositeCancellation($cancellation, $this->abortCancellation);
         } else {
             $cancellation = $this->abortCancellation;

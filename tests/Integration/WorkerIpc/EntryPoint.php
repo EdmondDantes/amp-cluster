@@ -28,11 +28,11 @@ final class EntryPoint implements WorkerEntryPointInterface, JobHandlerInterface
     {
         $file                       = self::getFile();
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             \unlink($file);
         }
 
-        if(\file_exists($file)) {
+        if (\file_exists($file)) {
             throw new \RuntimeException('Could not remove file: ' . $file);
         }
     }
@@ -43,7 +43,7 @@ final class EntryPoint implements WorkerEntryPointInterface, JobHandlerInterface
     {
         $this->worker               = $worker;
 
-        if($worker->getWorkerGroup()->getWorkerType() === WorkerTypeEnum::JOB) {
+        if ($worker->getWorkerGroup()->getWorkerType() === WorkerTypeEnum::JOB) {
             $worker->getWorkerGroup()->getJobExecutor()->defineJobHandler($this);
         }
     }
@@ -62,10 +62,10 @@ final class EntryPoint implements WorkerEntryPointInterface, JobHandlerInterface
     {
         $group                      = $this->worker->getWorkerGroup();
 
-        if($group->getWorkerType() === WorkerTypeEnum::REACTOR) {
+        if ($group->getWorkerType() === WorkerTypeEnum::REACTOR) {
             $future                 = $group->getJobClient()?->sendJobImmediately($group->getGroupName(), awaitResult: true);
 
-            if($future === null) {
+            if ($future === null) {
                 throw new FatalWorkerException('Could not send job to client');
             }
 
